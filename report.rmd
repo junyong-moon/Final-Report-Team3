@@ -69,3 +69,20 @@ ggplot(wo_us, aes(y=dpercentage, x=health_exp_pc)) +
 ```
 
 Health Care Expenses per Capita still has no positive correlation with Deaths per Population.
+
+```{r}
+ggplot(wo_us, aes(y=deaths_cum, x=soc_insur_cov)) +
+    geom_smooth()+
+    geom_point()+
+    labs(title = "", y = "Total Deaths", x = "soc_insur_cov")
+```
+
+The bump in the middle indicates that soc_insur_cov has to exceed a certain amount for it to be effective.
+
+```{r}
+ggplot(new, aes(y=dpercentage, x=soc_insur_cov)) +
+    geom_smooth()+
+    geom_point()+
+    labs(title = "All Countries", y = "Total Deaths", x = "soc_insur_cov")
+```
+
