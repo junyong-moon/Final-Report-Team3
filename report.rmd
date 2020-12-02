@@ -14,13 +14,14 @@ library(tidyverse)
 library(ggplot2)
 library(magrittr)
 library(dplyr)
+library(readr)
 ```
 
-```{r}
+```{r load-data}
 data <- read.csv("https://wzb-ipi.github.io/corona/df_full.csv")
 ```
 
-```{r}
+```{r process-data}
 new <- data %>%
   filter(elapsed==334)%>%
   select(geoid2, region, continent, country, population_2019, pop_density, deaths_cum, health_exp_pc, soc_insur_cov)
@@ -29,7 +30,7 @@ wo_us <- new %>%
   filter(country != "United States")
 ```
 
-```{r}
+```{r plot-mortality-health-expenses}
 ggplot(new, aes(y=deaths_cum, x=health_exp_pc)) +
     geom_smooth()+
     geom_point()+
@@ -48,7 +49,7 @@ ggplot(wo_us, aes(y=deaths_cum, x=health_exp_pc, color = continent)) +
 
 We see no positive correlation btween Total Deaths and Health Care Expenses, even after removing US as outlier. What we can infer from it is that European countries has more health expenses per capita
 
-```{r}
+```{r deaths-per-population}
 new <- new %>%
    mutate(dpercentage = deaths_cum/population_2019)
 
@@ -56,7 +57,7 @@ wo_us <- wo_us %>%
    mutate(dpercentage = deaths_cum/population_2019)
 ```
 
-```{r}
+```{r plot-mortality-expenses-per-cap}
 ggplot(new, aes(y=dpercentage, x=health_exp_pc)) +
     geom_smooth()+
     geom_point()+
@@ -86,3 +87,31 @@ ggplot(new, aes(y=dpercentage, x=soc_insur_cov)) +
     labs(title = "All Countries", y = "Total Deaths", x = "soc_insur_cov")
 ```
 
+```{r create-dataset-healthcare}
+data_health_quality <- data %>%
+                    filter(elapsed == 334 & is.na(healthcare_qual) == FALSE) %>%
+                    select(geoid2, region, continent, country, population_2019, pop_density, deaths_cum, healthcare_qual, health_equality)
+
+data_health_quality_wo_us <- data_health_quality %>%
+                              filter(country != 'United States')
+```
+
+```{r plot-healthcare}
+ggplot(data_health_quality, aes(x = healthcare_qual, y=deaths_cum)) +
+       geom_point() +
+       geom_smooth() +
+       labs(title = "Plot between healthcare quality and COVID-19 mortality",
+            subtitle = "All countries",
+            x = "Healthcare quality", y = 'Total Deaths')
+
+ggplot(data_health_quality_wo_us, aes(x = healthcare_qual, y=deaths_cum)) +
+       geom_point() +
+       geom_smooth() +
+       labs(title = "Plot between healthcare quality and COVID-19 mortality",
+            subtitle = "US removed",
+            x = "Healthcare quality", y = 'Total Deaths')
+
+```
+```{r calculate-correlations-healthcare}
+# cor() function didn't work...
+```
