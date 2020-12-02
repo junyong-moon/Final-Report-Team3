@@ -92,11 +92,12 @@ data_health_quality <- data %>%
                     filter(elapsed == 334 & is.na(healthcare_qual) == FALSE) %>%
                     select(geoid2, region, continent, country, population_2019, pop_density, deaths_cum, healthcare_qual, health_equality)
 
-data_health_quality_wo_us <- data_health_quality %>%
-                              filter(country != 'United States')
+data_health_quality_wo_outliers <- data_health_quality %>%
+                              filter(deaths_cum < 100000)
 ```
 
 ```{r plot-healthcare}
+
 ggplot(data_health_quality, aes(x = healthcare_qual, y=deaths_cum)) +
        geom_point() +
        geom_smooth() +
@@ -104,7 +105,8 @@ ggplot(data_health_quality, aes(x = healthcare_qual, y=deaths_cum)) +
             subtitle = "All countries",
             x = "Healthcare quality", y = 'Total Deaths')
 
-ggplot(data_health_quality_wo_us, aes(x = healthcare_qual, y=deaths_cum)) +
+
+ggplot(data_health_quality_wo_outliers, aes(x = healthcare_qual, y=deaths_cum)) +
        geom_point() +
        geom_smooth() +
        labs(title = "Plot between healthcare quality and COVID-19 mortality",
@@ -113,5 +115,30 @@ ggplot(data_health_quality_wo_us, aes(x = healthcare_qual, y=deaths_cum)) +
 
 ```
 ```{r calculate-correlations-healthcare}
-# cor() function didn't work...
+cor_healthcare <- cor(data_health_quality$healthcare_qual, data_health_quality$deaths_cum)
+
+cor_healthcare_wo_outliers <- cor(data_health_quality_wo_outliers$healthcare_qual, 
+                                  data_health_quality_wo_outliers$deaths_cum)
+
+cor_healthcare
+cor_healthcare_wo_outliers
+
+
+```
+
+The correlation between healthcare quality and mortality of COVID-19 does not seem to be very strong with r = 0.149.
+Without outliers, though, it increases to 0.275.
+Thus, healthcare quality and mortality are relatable, but only at a weak degree.
+
+```{r join-survey-result}
+# This seems to be problematic, likely bc the country names don't match.
+
+survey <- read_csv('survey_healthcare.csv')
+
+combined <- left_join(data_health_quality, survey)
+
+data_health_quality
+
+combined
+
 ```
