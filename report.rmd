@@ -11,24 +11,61 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r load-libraries}
 library(tidyverse)
+library(ggplot2)
+library(magrittr)
+library(dplyr)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r}
+data <- read.csv("https://wzb-ipi.github.io/corona/df_full.csv")
 ```
 
-## Including Plots
+```{r}
+new <- data %>%
+  filter(elapsed==334)%>%
+  select(geoid2, region, continent, country, population_2019, pop_density, deaths_cum, health_exp_pc, soc_insur_cov)
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+wo_us <- new %>%
+  filter(country != "United States")
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+ggplot(new, aes(y=deaths_cum, x=health_exp_pc)) +
+    geom_smooth()+
+    geom_point()+
+    labs(title = "All Countries", y = "Total Deaths", x = "Health Expensees/Capita")
+
+ggplot(wo_us, aes(y=deaths_cum, x=health_exp_pc)) +
+    geom_smooth()+
+    geom_point()+
+    labs(title = "Without US", y = "Total Deaths", x = "Health Expensees/Capita")
+
+ggplot(wo_us, aes(y=deaths_cum, x=health_exp_pc, color = continent)) +
+    geom_point()+
+    labs(title = "Without US", y = "Total Deaths", x = "Health Expensees/Capita")
+
+```
+
+We see no positive correlation btween Total Deaths and Health Care Expenses, even after removing US as outlier. What we can infer from it is that European countries has more health expenses per capita
+
+```{r}
+new <- new %>%
+   mutate(dpercentage = deaths_cum/population_2019)
+
+wo_us <- wo_us %>%
+   mutate(dpercentage = deaths_cum/population_2019)
+```
+
+```{r}
+ggplot(new, aes(y=dpercentage, x=health_exp_pc)) +
+    geom_smooth()+
+    geom_point()+
+    labs(title = "All Countries", y = "Total Deaths/Popluation", x = "Health Expensees/Capita")
+
+ggplot(wo_us, aes(y=dpercentage, x=health_exp_pc)) +
+    geom_smooth()+
+    geom_point()+
+    labs(title = "Without US", y = "Total Deaths/Popluation", x = "Health Expensees/Capita")
+```
+
+Health Care Expenses per Capita still has no positive correlation with Deaths per Population.
