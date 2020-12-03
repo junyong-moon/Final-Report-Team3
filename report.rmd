@@ -50,6 +50,16 @@ ggplot(wo_us, aes(y=deaths_cum, x=health_exp_pc, color = continent)) +
 
 ```
 
+```{r}
+cor_01 <- cor(new$health_exp_pc, new$deaths_cum, use = "complete.obs")
+cor_02 <- cor(wo_us$health_exp_pc, wo_us$deaths_cum, use = "complete.obs")
+
+cor_01
+cor_02
+
+```
+
+
 We see no positive correlation btween Total Deaths and Health Care Expenses, even after removing US as outlier. What we can infer from it is that European countries has more health expenses per capita
 
 ```{r deaths-per-population}
@@ -74,6 +84,14 @@ ggplot(wo_us, aes(y=dpercentage, x=health_exp_pc)) +
          subtitle = "Outliers Removed", y = "Total Deaths/Popluation", x = "Health Expensees/Capita")
 ```
 
+```{r}
+cor_03 <- cor(new$health_exp_pc, new$dpercentage, use = "complete.obs")
+cor_04 <- cor(wo_us$health_exp_pc, wo_us$dpercentage, use = "complete.obs")
+
+cor_03
+cor_04
+```
+
 Health Care Expenses per Capita still has no positive correlation with Deaths per Population.
 
 ```{r}
@@ -84,6 +102,11 @@ ggplot(new, aes(y=deaths_cum, x=soc_insur_cov)) +
          subtitle = "All Countries", y = "Total Deaths", x = "soc_insur_cov")
 ```
 
+```{r}
+cor_05 <- cor(new$soc_insur_cov, new$deaths_cum, use = "complete.obs")
+cor_05
+```
+
 The bump in the middle indicates that soc_insur_cov has to exceed a certain amount for it to be effective.
 
 ```{r}
@@ -92,6 +115,11 @@ ggplot(new, aes(y=dpercentage, x=soc_insur_cov)) +
     geom_point()+
     labs(title = "Plot between soc_insur_cov and COVID-19 mortality per Capita",
          subtitle = "All Countries", y = "Total Deaths/Popluation", x = "soc_insur_cov")
+```
+
+```{r}
+cor_06 <- cor(new$soc_insur_cov, new$dpercentage, use = "complete.obs")
+cor_06
 ```
 
 ```{r create-dataset-healthcare}
