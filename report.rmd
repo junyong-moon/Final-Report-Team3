@@ -27,23 +27,26 @@ new <- data %>%
   select(geoid2, region, continent, country, population_2019, pop_density, deaths_cum, health_exp_pc, soc_insur_cov)
 
 wo_us <- new %>%
-  filter(country != "United States")
+  filter(deaths_cum < 100000)
 ```
 
 ```{r plot-mortality-health-expenses}
 ggplot(new, aes(y=deaths_cum, x=health_exp_pc)) +
     geom_smooth()+
     geom_point()+
-    labs(title = "All Countries", y = "Total Deaths", x = "Health Expensees/Capita")
+    labs(title = "Plot between Health Expenses per Capita and COVID-19 mortality",
+         subtitle = "All Countries", y = "Total Deaths", x = "Health Expensees/Capita")
 
 ggplot(wo_us, aes(y=deaths_cum, x=health_exp_pc)) +
     geom_smooth()+
     geom_point()+
-    labs(title = "Without US", y = "Total Deaths", x = "Health Expensees/Capita")
+    labs(title = "Plot between Health Expenses per Capita and COVID-19 mortality",
+         subtitle = "Outliers Removed", y = "Total Deaths", x = "Health Expensees/Capita")
 
 ggplot(wo_us, aes(y=deaths_cum, x=health_exp_pc, color = continent)) +
     geom_point()+
-    labs(title = "Without US", y = "Total Deaths", x = "Health Expensees/Capita")
+    labs(title = "Plot between Health Expenses per Capita and COVID-19 mortality",
+         subtitle = "Outliers Removed", y = "Total Deaths", x = "Health Expensees/Capita")
 
 ```
 
@@ -61,21 +64,24 @@ wo_us <- wo_us %>%
 ggplot(new, aes(y=dpercentage, x=health_exp_pc)) +
     geom_smooth()+
     geom_point()+
-    labs(title = "All Countries", y = "Total Deaths/Popluation", x = "Health Expensees/Capita")
+    labs(title = "Plot between Health Expenses per Capita and COVID-19 mortality per Capita",
+         subtitle = "All Countries", y = "Total Deaths/Popluation", x = "Health Expensees/Capita")
 
 ggplot(wo_us, aes(y=dpercentage, x=health_exp_pc)) +
     geom_smooth()+
     geom_point()+
-    labs(title = "Without US", y = "Total Deaths/Popluation", x = "Health Expensees/Capita")
+    labs(title = "Plot between Health Expenses per Capita and COVID-19 mortality per Capita",
+         subtitle = "Outliers Removed", y = "Total Deaths/Popluation", x = "Health Expensees/Capita")
 ```
 
 Health Care Expenses per Capita still has no positive correlation with Deaths per Population.
 
 ```{r}
-ggplot(wo_us, aes(y=deaths_cum, x=soc_insur_cov)) +
+ggplot(new, aes(y=deaths_cum, x=soc_insur_cov)) +
     geom_smooth()+
     geom_point()+
-    labs(title = "", y = "Total Deaths", x = "soc_insur_cov")
+    labs(title = "Plot between soc_insur_cov and COVID-19 mortality",
+         subtitle = "All Countries", y = "Total Deaths", x = "soc_insur_cov")
 ```
 
 The bump in the middle indicates that soc_insur_cov has to exceed a certain amount for it to be effective.
@@ -84,7 +90,8 @@ The bump in the middle indicates that soc_insur_cov has to exceed a certain amou
 ggplot(new, aes(y=dpercentage, x=soc_insur_cov)) +
     geom_smooth()+
     geom_point()+
-    labs(title = "All Countries", y = "Total Deaths", x = "soc_insur_cov")
+    labs(title = "Plot between soc_insur_cov and COVID-19 mortality per Capita",
+         subtitle = "All Countries", y = "Total Deaths/Popluation", x = "soc_insur_cov")
 ```
 
 ```{r create-dataset-healthcare}
