@@ -1,12 +1,12 @@
 ---
 title: "Report"
 author: "Jun, Irene, Binh, Weidun"
-date: "12/1/2020"
+date: "12/4/2020"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE) 
 ```
 
 ```{r load-libraries}
