@@ -163,7 +163,7 @@ cor_healthcare_wo_outliers
 
 The correlation between healthcare quality and mortality of COVID-19 does not seem to be very strong with r = 0.149.
 Without outliers, though, it increases to 0.275.
-Thus, healthcare quality and mortality are relatable, but only at a weak degree.
+Thus, healthcare quality and mortality are merely weakly relatable.
 
 ```{r join-survey-result}
 # This seems to be problematic, likely bc the country names don't match.
