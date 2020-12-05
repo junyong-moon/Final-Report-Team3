@@ -195,3 +195,13 @@ ggplot(data_doctors, aes(x = doctors_pc, y=deaths_cum)) +
             x = "Doctors per Capita", y = 'Total Deaths') 
 ```
 
+Total Deaths vs. Access to Sanitation 
+
+```{r plot-sanitation}
+ggplot(data_doctors, aes(x = acc_sanitation, y=deaths_cum)) +
+       geom_point() +
+       geom_smooth() +
+       labs(title = "Total Deaths vs. Access to Sanitation",
+            subtitle = "All countries",
+            x = "Access to Sanitation", y = 'Total Deaths') 
+```
