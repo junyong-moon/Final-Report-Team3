@@ -195,6 +195,11 @@ ggplot(data_doctors, aes(x = doctors_pc, y=deaths_cum)) +
             x = "Doctors per Capita", y = 'Total Deaths') 
 ```
 
+```{r correlation}
+cor_doctors <- cor(data_doctors$doctors_pc, data_doctors$deaths_cum)
+cor_doctors
+```
+
 Total Deaths vs. Access to Sanitation 
 
 ```{r plot-sanitation}
@@ -205,3 +210,9 @@ ggplot(data_doctors, aes(x = acc_sanitation, y=deaths_cum)) +
             subtitle = "All countries",
             x = "Access to Sanitation", y = 'Total Deaths') 
 ```
+
+```{r correlation}
+cor_sanitation <- cor(data_doctors$acc_sanitation, data_doctors$deaths_cum)
+cor_sanitation
+```
+
