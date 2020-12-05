@@ -177,3 +177,42 @@ data_health_quality
 combined
 
 ```
+
+Total Deaths vs. Doctors per Capita 
+
+```{r create-dataset-doctors}
+data_doctors <- data %>%
+                    filter(elapsed == 334 & is.na(doctors_pc) == FALSE) %>%
+                    select(geoid2, region, continent, country, population_2019, pop_density, deaths_cum, doctors_pc, acc_sanitation)
+```
+
+```{r plot-doctors}
+ggplot(data_doctors, aes(x = doctors_pc, y=deaths_cum)) +
+       geom_point() +
+       geom_smooth() +
+       labs(title = "Total Deaths vs. Doctors per Capita",
+            subtitle = "All countries",
+            x = "Doctors per Capita", y = 'Total Deaths') 
+```
+
+```{r correlation}
+cor_doctors <- cor(data_doctors$doctors_pc, data_doctors$deaths_cum)
+cor_doctors
+```
+
+Total Deaths vs. Access to Sanitation 
+
+```{r plot-sanitation}
+ggplot(data_doctors, aes(x = acc_sanitation, y=deaths_cum)) +
+       geom_point() +
+       geom_smooth() +
+       labs(title = "Total Deaths vs. Access to Sanitation",
+            subtitle = "All countries",
+            x = "Access to Sanitation", y = 'Total Deaths') 
+```
+
+```{r correlation}
+cor_sanitation <- cor(data_doctors$acc_sanitation, data_doctors$deaths_cum)
+cor_sanitation
+```
+
