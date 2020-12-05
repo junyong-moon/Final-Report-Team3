@@ -1,7 +1,7 @@
 ---
 title: "Report"
 author: "Jun, Irene, Binh, Weidun"
-date: "12/4/2020"
+date: "12/6/2020"
 output: html_document
 ---
 
@@ -17,33 +17,34 @@ library(dplyr)
 library(readr)
 ```
 
-```{r load-data}
-data <- read.csv("https://wzb-ipi.github.io/corona/df_full.csv")
+```{r load-csv-file}
+data <- read.csv("https://wzb-ipi.github.io/corona/df_full.csv") %>%
+          filter(elapsed == 334) %>%
+          mutate(mortality_rate = deaths_cum / cases_cum)
 ```
 
 ```{r process-data}
-new <- data %>%
-  filter(elapsed==334)%>%
-  select(geoid2, region, continent, country, population_2019, pop_density, deaths_cum, health_exp_pc, soc_insur_cov)
+data <- data %>%
+  select(country, continent, population_2019, pop_density, deaths_cum, cases_cum, mortality_rate, health_exp_pc, soc_insur_cov, healthcare_qual, health_equality, doctors_pc, acc_sanitation)
 
-wo_us <- new %>%
+data_wo_outliers <- new %>%
   filter(deaths_cum < 100000)
 ```
 
 ```{r plot-mortality-health-expenses}
-ggplot(new, aes(y=deaths_cum, x=health_exp_pc)) +
+ggplot(data, aes(y=deaths_cum, x=health_exp_pc)) +
     geom_smooth()+
     geom_point()+
     labs(title = "Plot between Health Expenses per Capita and COVID-19 mortality",
          subtitle = "All Countries", y = "Total Deaths", x = "Health Expensees/Capita")
 
-ggplot(wo_us, aes(y=deaths_cum, x=health_exp_pc)) +
+ggplot(data_wo_outliers, aes(y=deaths_cum, x=health_exp_pc)) +
     geom_smooth()+
     geom_point()+
     labs(title = "Plot between Health Expenses per Capita and COVID-19 mortality",
          subtitle = "Outliers Removed", y = "Total Deaths", x = "Health Expensees/Capita")
 
-ggplot(wo_us, aes(y=deaths_cum, x=health_exp_pc, color = continent)) +
+ggplot(data_wo_outliers, aes(y=deaths_cum, x=health_exp_pc, color = continent)) +
     geom_point()+
     labs(title = "Plot between Health Expenses per Capita and COVID-19 mortality",
          subtitle = "Outliers Removed", y = "Total Deaths", x = "Health Expensees/Capita")
@@ -60,24 +61,24 @@ cor_02
 ```
 
 
-We see no positive correlation btween Total Deaths and Health Care Expenses, even after removing US as outlier. What we can infer from it is that European countries has more health expenses per capita
+We see no positive correlation btween Total Deaths and Health Care Expenses, even after removing US as an outlier. What we can infer from it is that European countries has more health expenses per capita
 
 ```{r deaths-per-population}
-new <- new %>%
+data <- data %>%
    mutate(dpercentage = deaths_cum/population_2019)
 
-wo_us <- wo_us %>%
+data_wo_outliers <- data_wo_outliers %>%
    mutate(dpercentage = deaths_cum/population_2019)
 ```
 
 ```{r plot-mortality-expenses-per-cap}
-ggplot(new, aes(y=dpercentage, x=health_exp_pc)) +
+ggplot(data, aes(y=dpercentage, x=health_exp_pc)) +
     geom_smooth()+
     geom_point()+
     labs(title = "Plot between Health Expenses per Capita and COVID-19 mortality per Capita",
          subtitle = "All Countries", y = "Total Deaths/Popluation", x = "Health Expensees/Capita")
 
-ggplot(wo_us, aes(y=dpercentage, x=health_exp_pc)) +
+ggplot(data_wo_outliers, aes(y=dpercentage, x=health_exp_pc)) +
     geom_smooth()+
     geom_point()+
     labs(title = "Plot between Health Expenses per Capita and COVID-19 mortality per Capita",
@@ -85,8 +86,8 @@ ggplot(wo_us, aes(y=dpercentage, x=health_exp_pc)) +
 ```
 
 ```{r}
-cor_03 <- cor(new$health_exp_pc, new$dpercentage, use = "complete.obs")
-cor_04 <- cor(wo_us$health_exp_pc, wo_us$dpercentage, use = "complete.obs")
+cor_03 <- cor(data$health_exp_pc, data$dpercentage, use = "complete.obs")
+cor_04 <- cor(data_wo_outliers$health_exp_pc, data_wo_outliers$dpercentage, use = "complete.obs")
 
 cor_03
 cor_04
@@ -95,11 +96,11 @@ cor_04
 Health Care Expenses per Capita still has no positive correlation with Deaths per Population.
 
 ```{r}
-ggplot(new, aes(y=deaths_cum, x=soc_insur_cov)) +
+ggplot(data, aes(y = deaths_cum, x=soc_insur_cov)) +
     geom_smooth()+
     geom_point()+
     labs(title = "Plot between soc_insur_cov and COVID-19 mortality",
-         subtitle = "All Countries", y = "Total Deaths", x = "soc_insur_cov")
+         subtitle = "All Countries", y = "Mortality Rate", x = "soc_insur_cov")
 ```
 
 ```{r}
@@ -122,97 +123,94 @@ cor_06 <- cor(new$soc_insur_cov, new$dpercentage, use = "complete.obs")
 cor_06
 ```
 
-```{r create-dataset-healthcare}
-data_health_quality <- data %>%
-                    filter(elapsed == 334 & is.na(healthcare_qual) == FALSE) %>%
-                    select(geoid2, region, continent, country, population_2019, pop_density, deaths_cum, healthcare_qual, health_equality)
-
-data_health_quality_wo_outliers <- data_health_quality %>%
-                              filter(deaths_cum < 100000)
-```
 
 ```{r plot-healthcare}
 
-ggplot(data_health_quality, aes(x = healthcare_qual, y=deaths_cum)) +
+data_healthcare <- data %>%
+        filter(is.na(healthcare_qual) == FALSE)
+  
+  
+ggplot(data_healthcare, aes(x = healthcare_qual, y = mortality_rate)) +
        geom_point() +
        geom_smooth() +
        labs(title = "Plot between healthcare quality and COVID-19 mortality",
             subtitle = "All countries",
             x = "Healthcare quality", y = 'Total Deaths')
 
+cor_healthcare <- cor(data_healthcare$healthcare_qual, data_healthcare$mortality_rate)
+cor_healthcare
+```
 
-ggplot(data_health_quality_wo_outliers, aes(x = healthcare_qual, y=deaths_cum)) +
+The correlation between healthcare quality and mortality of COVID-19 does not seem to be very strong with r = -0.08. Thus, the healthcare quality and the mortality rate among countries are independent to each other.
+
+```{r plot-health-equality}
+data_equality <- data %>% filter(is.na(health_equality) == FALSE)
+
+data_equality_wo_outlier <- data_equality %>% filter(mortality_rate < 0.2)
+
+ggplot(data_equality, aes(x = health_equality, y=mortality_rate)) +
        geom_point() +
        geom_smooth() +
-       labs(title = "Plot between healthcare quality and COVID-19 mortality",
-            subtitle = "US removed",
-            x = "Healthcare quality", y = 'Total Deaths')
+       labs(title = "Plot between health equality and COVID-19 mortality",
+            subtitle = "All countries",
+            x = "Health equality", y = 'Total Deaths')
+
+ggplot(data_equality_wo_outlier, aes(x = health_equality, y=mortality_rate)) +
+       geom_point() +
+       geom_smooth() +
+       labs(title = "Plot between health equality and COVID-19 mortality",
+            subtitle = "All countries",
+            x = "Health equality", y = 'Total Deaths')
+
+
+cor_equality <- cor(data_equality$health_equality, data_equality$mortality_rate)
+cor_equality
+cor_equality_wo_outlier <- cor(data_equality_wo_outlier$health_equality,
+                              data_equality_wo_outlier$mortality_rate)
+cor_equality_wo_outlier
 
 ```
-```{r calculate-correlations-healthcare}
-cor_healthcare <- cor(data_health_quality$healthcare_qual, data_health_quality$deaths_cum)
+Health eqaulity and the mortality rate are weakly, negatively correlative, with r = -0.27.
+However, without the outlier (mortality_rate > 0.2), the correlation becomes visually very weak.
 
-cor_healthcare_wo_outliers <- cor(data_health_quality_wo_outliers$healthcare_qual, 
-                                  data_health_quality_wo_outliers$deaths_cum)
-
-cor_healthcare
-cor_healthcare_wo_outliers
-
-
+```{r pick-outlier}
+glimpse(data_health_quality %>% filter(mortality_rate > 0.2) %>%
+          select(country, cases_cum, deaths_cum, mortality_rate, healthcare_qual, health_equality))
 ```
 
-The correlation between healthcare quality and mortality of COVID-19 does not seem to be very strong with r = 0.149.
-Without outliers, though, it increases to 0.275.
-Thus, healthcare quality and mortality are merely weakly relatable.
 
-```{r join-survey-result}
-# This seems to be problematic, likely bc the country names don't match.
-
-survey <- read_csv('survey_healthcare.csv')
-
-combined <- left_join(data_health_quality, survey)
-
-data_health_quality
-
-combined
-
-```
 
 Total Deaths vs. Doctors per Capita 
 
-```{r create-dataset-doctors}
-data_doctors <- data %>%
-                    filter(elapsed == 334 & is.na(doctors_pc) == FALSE) %>%
-                    select(geoid2, region, continent, country, population_2019, pop_density, deaths_cum, doctors_pc, acc_sanitation)
-```
-
 ```{r plot-doctors}
-ggplot(data_doctors, aes(x = doctors_pc, y=deaths_cum)) +
+data_doctor <- data %>% filter(is.na(doctors_pc) == FALSE)
+
+ggplot(data_doctor, aes(x = doctors_pc, y=mortality_rate)) +
        geom_point() +
        geom_smooth() +
-       labs(title = "Total Deaths vs. Doctors per Capita",
+       labs(title = "Mortality Rates vs. Doctors per Capita",
             subtitle = "All countries",
-            x = "Doctors per Capita", y = 'Total Deaths') 
+            x = "Doctors per Capita", y = 'Mortality Rate') 
 ```
 
-```{r correlation}
-cor_doctors <- cor(data_doctors$doctors_pc, data_doctors$deaths_cum)
+```{r correlation_doctors_per_cap}
+cor_doctors <- cor(data_doctor$doctors_pc, data_doctor$mortality_rate)
 cor_doctors
 ```
 
 Total Deaths vs. Access to Sanitation 
 
 ```{r plot-sanitation}
-ggplot(data_doctors, aes(x = acc_sanitation, y=deaths_cum)) +
+ggplot(data, aes(x = acc_sanitation, y=mortality_rate)) +
        geom_point() +
        geom_smooth() +
-       labs(title = "Total Deaths vs. Access to Sanitation",
+       labs(title = "Mortality Rates vs. Access to Sanitation",
             subtitle = "All countries",
-            x = "Access to Sanitation", y = 'Total Deaths') 
+            x = "Access to Sanitation", y = 'Mortality Rate') 
 ```
 
-```{r correlation}
-cor_sanitation <- cor(data_doctors$acc_sanitation, data_doctors$deaths_cum)
+```{r correlation_access_sanitation}
+cor_sanitation <- cor(data$acc_sanitation, data$deaths_cum)
 cor_sanitation
 ```
 
