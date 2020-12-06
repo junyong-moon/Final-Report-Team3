@@ -53,13 +53,13 @@ Health Expenses:
 ggplot(data, aes(y=mortality_rate, x=health_exp_pc)) +
     geom_smooth()+
     geom_point()+
-    labs(title = "Plot between Health Expenses per Capita and COVID-19 mortality",
+    labs(title = "Health Expenses vs. Mortality Rate",
          subtitle = "All Countries", y = "Mortality Rate", x = "Health Expensees")
 
 ggplot(data01, aes(y=mortality_rate, x=health_exp_pc)) +
     geom_smooth()+
     geom_point()+
-    labs(title = "Plot between Health Expenses per Capita and COVID-19 mortality",
+    labs(title = "Health Expenses vs. Mortality Rate",
          subtitle = "Outliers Removed", y = "Mortality Rate", x = "Health Expensees")
 
 ```
@@ -81,13 +81,13 @@ Insurance Coverage
 ggplot(data, aes(y = mortality_rate, x=soc_insur_cov)) +
     geom_smooth()+
     geom_point()+
-    labs(title = "Plot between Social Insurance Coverage and COVID-19 mortality",
+    labs(title = "Insurance Coverage vs. Mortality Rate",
          subtitle = "All Countries", y = "Mortality Rate", x = "Insurance Coverage")
 
 ggplot(data01, aes(y = mortality_rate, x=soc_insur_cov)) +
     geom_smooth()+
     geom_point()+
-    labs(title = "Plot between Social Insurance Coverage and COVID-19 mortality",
+    labs(title = "Insurance Coverage vs. Mortality Rate",
          subtitle = "Outliers Removed", y = "Mortality Rate", x = "Insurance Coverage")
 ```
 
@@ -110,9 +110,9 @@ data_healthcare <- data %>%
 ggplot(data_healthcare, aes(x = healthcare_qual, y = mortality_rate)) +
        geom_point() +
        geom_smooth() +
-       labs(title = "Plot between healthcare quality and COVID-19 mortality",
+       labs(title = "Healthcare Quality vs. Mortality Rate",
             subtitle = "All countries",
-            x = "Healthcare quality", y = 'Total Deaths')
+            x = "Healthcare quality", y = "Mortality Rate")
 
 cor_healthcare <- cor(data_healthcare$healthcare_qual, data_healthcare$mortality_rate)
 cor_healthcare
@@ -128,16 +128,16 @@ data_equality_wo_outlier <- data_equality %>% filter(mortality_rate < 0.2)
 ggplot(data_equality, aes(x = health_equality, y=mortality_rate)) +
        geom_point() +
        geom_smooth() +
-       labs(title = "Plot between health equality and COVID-19 mortality",
+       labs(title = "Health Equality vs. Mortality Rate",
             subtitle = "All countries",
-            x = "Health equality", y = 'Total Deaths')
+            x = "Health equality", y = "Mortality Rate")
 
 ggplot(data_equality_wo_outlier, aes(x = health_equality, y=mortality_rate)) +
        geom_point() +
        geom_smooth() +
-       labs(title = "Plot between health equality and COVID-19 mortality",
+       labs(title = "Health Equality vs. Mortality Rate",
             subtitle = "All countries",
-            x = "Health equality", y = 'Total Deaths')
+            x = "Health equality", y = 'Mortality Rate')
 
 
 cor_equality <- cor(data_equality$health_equality, data_equality$mortality_rate)
@@ -166,7 +166,7 @@ data_doctor <- data %>% filter(is.na(doctors_pc) == FALSE)
 ggplot(data_doctor, aes(x = doctors_pc, y=mortality_rate)) +
        geom_point() +
        geom_smooth() +
-       labs(title = "Mortality Rates vs. Doctors per Capita",
+       labs(title = "Doctors per Capita vs. Mortality Rate",
             subtitle = "All countries",
             x = "Doctors per Capita", y = 'Mortality Rate') 
 ```
@@ -182,7 +182,7 @@ Total Deaths vs. Access to Sanitation
 ggplot(data_doctor, aes(x = acc_sanitation, y=mortality_rate)) +
        geom_point() +
        geom_smooth() +
-       labs(title = "Mortality Rates vs. Access to Sanitation",
+       labs(title = "Access to Sanitation vs. Mortality Rate",
             subtitle = "All countries",
             x = "Access to Sanitation", y = 'Mortality Rate') 
 ```
