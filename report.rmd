@@ -138,7 +138,7 @@ Health eqaulity and the mortality rate are weakly, negatively correlative, with 
 However, without the outlier (mortality_rate > 0.2), the correlation becomes visually very weak.
 
 ```{r pick-outlier}
-glimpse(data_health_quality %>% filter(mortality_rate > 0.2) %>%
+glimpse(data_equality %>% filter(mortality_rate > 0.2) %>%
           select(country, cases_cum, deaths_cum, mortality_rate, healthcare_qual, health_equality))
 ```
 
