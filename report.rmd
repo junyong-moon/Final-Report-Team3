@@ -25,7 +25,7 @@ data <- read.csv("https://wzb-ipi.github.io/corona/df_full.csv") %>%
 
 ```{r process-data}
 data <- data %>%
-  select(country, continent, population_2019, pop_density, deaths_cum, cases_cum, mortality_rate, health_exp_pc, soc_insur_cov, healthcare_qual, health_equality, doctors_pc, acc_sanitation)
+  select(country, continent, population_2019, pop_density, deaths_cum, cases_cum, mortality_rate, health_exp_pc, soc_insur_cov, healthcare_qual, health_equality, doctors_pc, acc_sanitation)  
 
 data_wo_outliers <- new %>%
   filter(deaths_cum < 100000)
@@ -179,7 +179,6 @@ glimpse(data_health_quality %>% filter(mortality_rate > 0.2) %>%
 ```
 
 
-
 Total Deaths vs. Doctors per Capita 
 
 ```{r plot-doctors}
@@ -201,7 +200,7 @@ cor_doctors
 Total Deaths vs. Access to Sanitation 
 
 ```{r plot-sanitation}
-ggplot(data, aes(x = acc_sanitation, y=mortality_rate)) +
+ggplot(data_doctor, aes(x = acc_sanitation, y=mortality_rate)) +
        geom_point() +
        geom_smooth() +
        labs(title = "Mortality Rates vs. Access to Sanitation",
@@ -210,7 +209,7 @@ ggplot(data, aes(x = acc_sanitation, y=mortality_rate)) +
 ```
 
 ```{r correlation_access_sanitation}
-cor_sanitation <- cor(data$acc_sanitation, data$deaths_cum)
+cor_sanitation <- cor(data_doctor$acc_sanitation, data_doctor$mortality_rate)
 cor_sanitation
 ```
 
