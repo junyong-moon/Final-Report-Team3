@@ -136,12 +136,14 @@ cor_equality_wo_outlier
 ```
 Health eqaulity and the mortality rate are weakly, negatively correlative, with r = -0.27.
 However, without the outlier (mortality_rate > 0.2), the correlation becomes visually very weak.
+Here is a brief look at the outlier.
 
 ```{r pick-outlier}
 glimpse(data_equality %>% filter(mortality_rate > 0.2) %>%
           select(country, cases_cum, deaths_cum, mortality_rate, healthcare_qual, health_equality))
 ```
 
+Thus, we conclude that better health equality does not necessarily lead to less mortality of COVID-19.
 
 Total Deaths vs. Doctors per Capita 
 
