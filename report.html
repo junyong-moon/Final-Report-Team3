@@ -437,14 +437,19 @@ library(magrittr)</code></pre>
 ## 
 ##     extract</code></pre>
 <pre class="r"><code>library(dplyr)
-library(readr)</code></pre>
+library(readr)
+library(countrycode)</code></pre>
 <pre class="r"><code>data &lt;- read.csv(&quot;https://wzb-ipi.github.io/corona/df_full.csv&quot;) %&gt;%
           filter(elapsed == 334) %&gt;%
           mutate(mortality_rate = deaths_cum / cases_cum)</code></pre>
 <pre class="r"><code>data &lt;- data %&gt;%
-  select(country, continent, population_2019, pop_density, deaths_cum, cases_cum, mortality_rate, health_exp_pc, soc_insur_cov, healthcare_qual, health_equality, doctors_pc, acc_sanitation)  
-
-data_wo_outliers &lt;- data %&gt;%
+  select(country, continent, population_2019, pop_density, deaths_cum, cases_cum, mortality_rate, health_exp_pc, soc_insur_cov, healthcare_qual, health_equality, doctors_pc, acc_sanitation)  </code></pre>
+<pre class="r"><code>survey &lt;- read.csv(&#39;survey_healthcare.csv&#39;) %&gt;%
+            select(!(gender:age)) %&gt;%
+            mutate(country = countrycode(country, &#39;iso2c&#39;, &#39;country.name&#39;))</code></pre>
+<pre class="r"><code>survey_merge &lt;- right_join(data, survey)</code></pre>
+<pre><code>## Joining, by = &quot;country&quot;</code></pre>
+<pre class="r"><code>data_wo_outliers &lt;- data %&gt;%
   filter(deaths_cum &lt; 100000)
 
 data01 &lt;- data_wo_outliers %&gt;%
@@ -547,7 +552,7 @@ cor_equality</code></pre>
                               data_equality_wo_outlier$mortality_rate)
 cor_equality_wo_outlier</code></pre>
 <pre><code>## [1] -0.2317052</code></pre>
-<p>Health eqaulity and the mortality rate are weakly, negatively correlative, with r = -0.27. However, without the outlier (mortality_rate &gt; 0.2), the correlation becomes visually very weak.</p>
+<p>Health eqaulity and the mortality rate are weakly, negatively correlative, with r = -0.27. However, without the outlier (mortality_rate &gt; 0.2), the correlation becomes visually very weak. Here is a brief look at the outlier.</p>
 <pre class="r"><code>glimpse(data_equality %&gt;% filter(mortality_rate &gt; 0.2) %&gt;%
           select(country, cases_cum, deaths_cum, mortality_rate, healthcare_qual, health_equality))</code></pre>
 <pre><code>## Rows: 1
@@ -558,6 +563,7 @@ cor_equality_wo_outlier</code></pre>
 ## $ mortality_rate  &lt;dbl&gt; 0.2834175
 ## $ healthcare_qual &lt;dbl&gt; 43.3
 ## $ health_equality &lt;dbl&gt; -2.924</code></pre>
+<p>Thus, we conclude that better health equality does not necessarily lead to less mortality of COVID-19.</p>
 <p>Total Deaths vs. Doctors per Capita</p>
 <pre class="r"><code>data_doctor &lt;- data %&gt;% filter(is.na(doctors_pc) == FALSE)
 

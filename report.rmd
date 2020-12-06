@@ -15,6 +15,7 @@ library(ggplot2)
 library(magrittr)
 library(dplyr)
 library(readr)
+library(countrycode)
 ```
 
 ```{r load-csv-file}
@@ -26,7 +27,19 @@ data <- read.csv("https://wzb-ipi.github.io/corona/df_full.csv") %>%
 ```{r process-data}
 data <- data %>%
   select(country, continent, population_2019, pop_density, deaths_cum, cases_cum, mortality_rate, health_exp_pc, soc_insur_cov, healthcare_qual, health_equality, doctors_pc, acc_sanitation)  
+```
 
+```{r convert-country-code}
+survey <- read.csv('survey_healthcare.csv') %>%
+            select(!(gender:age)) %>%
+            mutate(country = countrycode(country, 'iso2c', 'country.name'))
+```
+
+```{r merge-data}
+survey_merge <- right_join(data, survey)
+```
+
+```{r fliter-outliers}
 data_wo_outliers <- data %>%
   filter(deaths_cum < 100000)
 
@@ -36,7 +49,7 @@ data01 <- data_wo_outliers %>%
 
 Health Expenses:
 
-```{r plot-mortality-health-expenses}
+```{r plot-health-expenses}
 ggplot(data, aes(y=mortality_rate, x=health_exp_pc)) +
     geom_smooth()+
     geom_point()+
@@ -51,7 +64,7 @@ ggplot(data01, aes(y=mortality_rate, x=health_exp_pc)) +
 
 ```
 
-```{r}
+```{r correlation-health-exp}
 cor_01 <- cor(data$health_exp_pc, data$mortality_rate, use = "complete.obs")
 cor_02 <- cor(data01$health_exp_pc, data01$mortality_rate, use = "complete.obs")
 
@@ -64,7 +77,7 @@ The correlation between health expenses and COVID-19 mortality rate shows no ass
 
 Insurance Coverage
 
-```{r}
+```{r plot-insurance}
 ggplot(data, aes(y = mortality_rate, x=soc_insur_cov)) +
     geom_smooth()+
     geom_point()+
@@ -78,7 +91,7 @@ ggplot(data01, aes(y = mortality_rate, x=soc_insur_cov)) +
          subtitle = "Outliers Removed", y = "Mortality Rate", x = "Insurance Coverage")
 ```
 
-```{r}
+```{r correlation-insurance}
 cor_03 <- cor(data$soc_insur_cov, data$mortality_rate, use = "complete.obs")
 cor_04 <- cor(data01$soc_insur_cov, data01$mortality_rate, use = "complete.obs")
 
@@ -158,7 +171,7 @@ ggplot(data_doctor, aes(x = doctors_pc, y=mortality_rate)) +
             x = "Doctors per Capita", y = 'Mortality Rate') 
 ```
 
-```{r correlation_doctors_per_cap}
+```{r correlation-doctors-per-cap}
 cor_doctors <- cor(data_doctor$doctors_pc, data_doctor$mortality_rate)
 cor_doctors
 ```
