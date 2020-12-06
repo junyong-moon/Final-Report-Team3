@@ -27,102 +27,66 @@ data <- read.csv("https://wzb-ipi.github.io/corona/df_full.csv") %>%
 data <- data %>%
   select(country, continent, population_2019, pop_density, deaths_cum, cases_cum, mortality_rate, health_exp_pc, soc_insur_cov, healthcare_qual, health_equality, doctors_pc, acc_sanitation)  
 
-data_wo_outliers <- new %>%
+data_wo_outliers <- data %>%
   filter(deaths_cum < 100000)
+
+data01 <- data_wo_outliers %>%
+  filter(mortality_rate < 0.1) 
 ```
 
+Health Expenses:
+
 ```{r plot-mortality-health-expenses}
-ggplot(data, aes(y=deaths_cum, x=health_exp_pc)) +
+ggplot(data, aes(y=mortality_rate, x=health_exp_pc)) +
     geom_smooth()+
     geom_point()+
     labs(title = "Plot between Health Expenses per Capita and COVID-19 mortality",
-         subtitle = "All Countries", y = "Total Deaths", x = "Health Expensees/Capita")
+         subtitle = "All Countries", y = "Mortality Rate", x = "Health Expensees")
 
-ggplot(data_wo_outliers, aes(y=deaths_cum, x=health_exp_pc)) +
+ggplot(data01, aes(y=mortality_rate, x=health_exp_pc)) +
     geom_smooth()+
     geom_point()+
     labs(title = "Plot between Health Expenses per Capita and COVID-19 mortality",
-         subtitle = "Outliers Removed", y = "Total Deaths", x = "Health Expensees/Capita")
-
-ggplot(data_wo_outliers, aes(y=deaths_cum, x=health_exp_pc, color = continent)) +
-    geom_point()+
-    labs(title = "Plot between Health Expenses per Capita and COVID-19 mortality",
-         subtitle = "Outliers Removed", y = "Total Deaths", x = "Health Expensees/Capita")
+         subtitle = "Outliers Removed", y = "Mortality Rate", x = "Health Expensees")
 
 ```
 
 ```{r}
-cor_01 <- cor(new$health_exp_pc, new$deaths_cum, use = "complete.obs")
-cor_02 <- cor(wo_us$health_exp_pc, wo_us$deaths_cum, use = "complete.obs")
+cor_01 <- cor(data$health_exp_pc, data$mortality_rate, use = "complete.obs")
+cor_02 <- cor(data01$health_exp_pc, data01$mortality_rate, use = "complete.obs")
 
 cor_01
 cor_02
 
 ```
 
+The correlation between health expenses and COVID-19 mortality rate shows no association with the r number around -0.089. We can also infer from the graph that with outliers removed, health expenses have a little to no impact on COVID-19 mortality rate (r = -0.087).
 
-We see no positive correlation btween Total Deaths and Health Care Expenses, even after removing US as an outlier. What we can infer from it is that European countries has more health expenses per capita
+Insurance Coverage
 
-```{r deaths-per-population}
-data <- data %>%
-   mutate(dpercentage = deaths_cum/population_2019)
-
-data_wo_outliers <- data_wo_outliers %>%
-   mutate(dpercentage = deaths_cum/population_2019)
-```
-
-```{r plot-mortality-expenses-per-cap}
-ggplot(data, aes(y=dpercentage, x=health_exp_pc)) +
+```{r}
+ggplot(data, aes(y = mortality_rate, x=soc_insur_cov)) +
     geom_smooth()+
     geom_point()+
-    labs(title = "Plot between Health Expenses per Capita and COVID-19 mortality per Capita",
-         subtitle = "All Countries", y = "Total Deaths/Popluation", x = "Health Expensees/Capita")
+    labs(title = "Plot between Social Insurance Coverage and COVID-19 mortality",
+         subtitle = "All Countries", y = "Mortality Rate", x = "Insurance Coverage")
 
-ggplot(data_wo_outliers, aes(y=dpercentage, x=health_exp_pc)) +
+ggplot(data01, aes(y = mortality_rate, x=soc_insur_cov)) +
     geom_smooth()+
     geom_point()+
-    labs(title = "Plot between Health Expenses per Capita and COVID-19 mortality per Capita",
-         subtitle = "Outliers Removed", y = "Total Deaths/Popluation", x = "Health Expensees/Capita")
+    labs(title = "Plot between Social Insurance Coverage and COVID-19 mortality",
+         subtitle = "Outliers Removed", y = "Mortality Rate", x = "Insurance Coverage")
 ```
 
 ```{r}
-cor_03 <- cor(data$health_exp_pc, data$dpercentage, use = "complete.obs")
-cor_04 <- cor(data_wo_outliers$health_exp_pc, data_wo_outliers$dpercentage, use = "complete.obs")
+cor_03 <- cor(data$soc_insur_cov, data$mortality_rate, use = "complete.obs")
+cor_04 <- cor(data01$soc_insur_cov, data01$mortality_rate, use = "complete.obs")
 
 cor_03
 cor_04
 ```
 
-Health Care Expenses per Capita still has no positive correlation with Deaths per Population.
-
-```{r}
-ggplot(data, aes(y = deaths_cum, x=soc_insur_cov)) +
-    geom_smooth()+
-    geom_point()+
-    labs(title = "Plot between soc_insur_cov and COVID-19 mortality",
-         subtitle = "All Countries", y = "Mortality Rate", x = "soc_insur_cov")
-```
-
-```{r}
-cor_05 <- cor(new$soc_insur_cov, new$deaths_cum, use = "complete.obs")
-cor_05
-```
-
-The bump in the middle indicates that soc_insur_cov has to exceed a certain amount for it to be effective.
-
-```{r}
-ggplot(new, aes(y=dpercentage, x=soc_insur_cov)) +
-    geom_smooth()+
-    geom_point()+
-    labs(title = "Plot between soc_insur_cov and COVID-19 mortality per Capita",
-         subtitle = "All Countries", y = "Total Deaths/Popluation", x = "soc_insur_cov")
-```
-
-```{r}
-cor_06 <- cor(new$soc_insur_cov, new$dpercentage, use = "complete.obs")
-cor_06
-```
-
+Social insurance coverage and COVID-19 mortality rate also shows no association with the r number at -0.107. However after removing outliers they show a weak negative correlation which suggests that insurance coverage have some limited impact on COVID-19 mortality (r = -0.215).
 
 ```{r plot-healthcare}
 
