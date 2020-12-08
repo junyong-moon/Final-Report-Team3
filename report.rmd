@@ -197,15 +197,17 @@ Number of hospital beds:
 data_hosp_beds_pc <- data %>% filter(!is.na(hosp_beds_pc))
 data_hosp_beds_pc_wo_outliers <- data_hosp_beds_pc %>% filter(mortality_rate < 0.2)
 ggplot(data_hosp_beds_pc, mapping = aes(x = hosp_beds_pc, y = mortality_rate, color
-      = continent)) + geom_point() + labs(title = "COVID-19 mortality rate and number of hospital beds available", subtitle = "All countries", x = "Number of hospital beds", y = "Mortality rate")
+      = continent)) + geom_point() + labs(title = "COVID-19 mortality rate and hospital beds per capita", subtitle = "All countries", x = "Hospital beds per capita", y = "Mortality rate")
 
 ggplot(data_hosp_beds_pc_wo_outliers, mapping = aes(x = hosp_beds_pc, y = mortality_rate, color
-      = continent)) + geom_point() + labs(title = "COVID-19 mortality rate and number of hospital beds available", subtitle = "No outliers", x = "Number of hospital beds", y = "Mortality rate")
+      = continent)) + geom_point() + labs(title = "COVID-19 mortality rate and Hospital beds per capita", subtitle = "No outliers", x = "Hospital beds per capita", y = "Mortality rate")
 ```
 
 ```{r correlation-hopspital-beds}
 cor_hosp_beds <- cor(data_hosp_beds_pc$hosp_beds_pc, data_hosp_beds_pc$mortality_rate, use = "complete.obs")
+cor_hosp_beds_wo_outliers <- cor(data_hosp_beds_pc_wo_outliers$hosp_beds_pc, data_hosp_beds_pc_wo_outliers$mortality_rate, use = "complete.obs")
 cor_hosp_beds
+cor_hosp_beds_wo_outliers
 ```
 ```{r plot-health-index}
 data_health_index <- data %>% filter(!is.na(health_index))
@@ -219,6 +221,8 @@ ggplot(data01, mapping = aes(x = health_index, y = mortality_rate, color
 
 ```{r correlation-health-index}
 cor_health_index <- cor(data_health_index$health_index, data_health_index$mortality_rate, use = "complete.obs")
+cor_health_index_wo_outliers <- cor(data_health_index_wo_outliers$health_index, data_health_index_wo_outliers$mortality_rate, use = "complete.obs")
 cor_health_index
+cor_he
 ```
 
