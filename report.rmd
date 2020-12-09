@@ -223,6 +223,5 @@ ggplot(data01, mapping = aes(x = health_index, y = mortality_rate, color
 cor_health_index <- cor(data_health_index$health_index, data_health_index$mortality_rate, use = "complete.obs")
 cor_health_index_wo_outliers <- cor(data_health_index_wo_outliers$health_index, data_health_index_wo_outliers$mortality_rate, use = "complete.obs")
 cor_health_index
-cor_he
 ```
 
