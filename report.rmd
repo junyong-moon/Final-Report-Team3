@@ -53,18 +53,25 @@ ggplot(data, aes(y=deaths_cum_per_million, x=health_exp_pc)) +
     stat_smooth(method='lm') +
     geom_point() +
     labs(title = "Health Expenses vs. COVID-19-associated deaths per million",
-         subtitle = "All Countries", y = "Deaths per million", x = "Health Expensees")
+         subtitle = "All Countries", y = "Deaths per million", x = "Health Expenses per capita")
 
-data_share_older <- data %>% filter(!is.na(share_older))
+ # Get correlation
 cor(data$health_exp_pc, data$deaths_cum_per_million, use = "complete.obs")
+ 
+ # Linear Regression
+lm_health_exp <- lm(deaths_cum_per_million ~ health_exp_pc, data)
+summary(lm_health_exp)
 
-t.test(data_share_older$health_exp_pc)
+# t.test(data_share_older$health_exp_pc)
 ```
 
 This rather looking very unexpected, so we looked at one of the confounding variable: population of older population.
 
 
 ```{r plot-health-expenses-and-share-older}
+
+data_share_older <- data %>% filter(!is.na(share_older))
+
 ggplot(data, aes(y=deaths_cum_per_million, x=health_exp_pc, color = share_older)) +
     theme_tufte() +
     stat_smooth(method='lm') +
@@ -87,16 +94,16 @@ ggplot(data_share_older, aes(y=health_exp_pc, x=share_older)) +
     labs(title = "The relationship between population share of older people and healthcare expenses",
          subtitle = "All Countries", y = "Healthcare expenses", x = "Share of older population")
 
+ # Get the correlation coefficient
 cor(data_share_older$share_older, data_share_older$health_exp_pc, use='complete.obs')
 
-
+ # Linear Regression
 share_and_expense = lm(health_exp_pc~share_older, data_share_older)
 summary(share_and_expense)
 ```
+So, it's possible that it's not the healthcare expenses alone that might affect the mortalities but the share of older population affecting both of the healthcare expenses and the mortalities.
 
-
-
-Number of hospital beds:
+Number of hospital beds simply means the capacities of hospitals to admit patients. We looked into the correlation between the number of hospital beds (per capita) and the mortalities.
 
 ```{r plot-hosptal-beds}
 data_hosp_beds_pc <- data %>% filter(!is.na(hosp_beds_pc))
@@ -110,22 +117,21 @@ ggplot(data_hosp_beds_pc, mapping = aes(x = hosp_beds_pc, y = deaths_cum_per_mil
   stat_smooth(method='lm')
 
   
-ggplot(data_hosp_beds_pc, mapping = aes(x = hosp_beds_pc, y = deaths_cum_per_million, color = continent)) +
-  geom_point() +
-  theme_tufte() +
-  labs(title = "COVID-19 mortality rate and number of hospital beds available", 
-       subtitle = "All countries", 
-       x = "Number of hospital beds", y = "Deaths per Million")
+#ggplot(data_hosp_beds_pc, mapping = aes(x = hosp_beds_pc, y = deaths_cum_per_million, color = continent)) +
+#  geom_point() +
+#  theme_tufte() +
+#  labs(title = "COVID-19 mortality rate and number of hospital beds available", 
+#       subtitle = "All countries", 
+#       x = "Number of hospital beds", y = "Deaths per Million")
 
  # Get correlation coefficient
-cor_hosp_beds <- cor(data_hosp_beds_pc$hosp_beds_pc, data_hosp_beds_pc$deaths_cum_per_million, use = "complete.obs")
-cor_hosp_beds
+cor(data_hosp_beds_pc$hosp_beds_pc, data_hosp_beds_pc$deaths_cum_per_million, use = "complete.obs")
 
  # Get confidence interval
 hosp_beds_and_mortality = lm(deaths_cum_per_million~hosp_beds_pc, data_hosp_beds_pc)
 summary(hosp_beds_and_mortality)
 ```
-
+It merely shows a weak correlation with r-squared number around 0.04. 
 
 ```{r plot-health-index}
 data_health_index <- data %>% filter(!is.na(health_index))
@@ -137,8 +143,8 @@ ggplot(data_health_index, mapping = aes(x = health_index, y = deaths_cum_per_mil
   stat_smooth(method='lm') +
   theme_tufte()
 
-cor_health_index <- cor(data_health_index$health_index, data_health_index$deaths_cum_per_million, use = "complete.obs")
-cor_health_index
+# Get the correlation coefficient
+cor(data_health_index$health_index, data_health_index$deaths_cum_per_million, use = "complete.obs")
 
  # Get confidence interval
 health_index_and_mortality = lm(deaths_cum_per_million~health_index, data_health_index)
