@@ -20,47 +20,49 @@ library(ggthemes)
 ```
 
 ```{r load-csv-file}
+# Load the csv file from the given source
+
 data <- read.csv("https://wzb-ipi.github.io/corona/df_full.csv") %>%
           filter(elapsed == 334)
-
 ```
 
 ```{r process-data}
+# Select columns that are desired
 data <- data %>%
-  select(country, continent, population_2019, pop_density, deaths_cum, deaths_cum_per_million, health_exp_pc, hosp_beds_pc, share_older)  
+  select(country, continent, population_2019, pop_density, deaths_cum, deaths_cum_per_million, health_exp_pc, hosp_beds_pc, share_older, detect_index)  
 ```
 
 ```{r convert-country-code}
+# Bring the survey dataset
+# Citation: Global survey on coronavirus beliefs, behaviors, and norms: Technical Report from MIT
+
 survey <- read.csv('survey_healthcare.csv') %>%
             select(!(gender:age)) %>%
             mutate(country = countrycode(country, 'iso2c', 'country.name'))
 ```
 
 ```{r merge-data}
+# Bring the GHS Index
+# Directly brought from the GHS Index website
+
 ghsi <- read.csv('ghsi.csv')
 data <- left_join(data, ghsi)
 
 survey_merge <- right_join(data, survey)
-
-data
 ```
 
-```{r fliter-outliers}
-data_wo_outliers <- data %>%
-  filter(deaths_cum < 100000)
-
-```
-
-Health Expenses: 
+<h3>Health Expenditure</h3>
 
 ```{r plot-health-expenses}
+
+# Plot data to show correlation between health expenses and COVID-19 deaths per million
+
 ggplot(data, aes(y=deaths_cum_per_million, x=health_exp_pc)) +
     theme_tufte() +
     stat_smooth(method='lm') +
     geom_point() +
     labs(title = "Health Expenses vs. COVID-19-associated deaths per million",
          subtitle = "All Countries", y = "Deaths per million", x = "Health Expenses per capita (USD)") 
-
 
 ```
 This rather looking very unexpected, indincating more deaths for more health expenses per capita. Here are the details for the dataset.
@@ -81,7 +83,7 @@ To address this unexpected pattern, we looked at one of the confounding variable
 
 ```{r plot-health-expenses-and-share-older}
 
-data_share_older <- data %>% filter(!is.na(share_older))
+# Add share_older to the plot as a dimension (color)
 
 ggplot(data, aes(y=deaths_cum_per_million, x=health_exp_pc, color = share_older)) +
     theme_tufte() +
@@ -90,7 +92,6 @@ ggplot(data, aes(y=deaths_cum_per_million, x=health_exp_pc, color = share_older)
     labs(title = "Health Expenses vs. COVID-19-associated deaths per million",
          subtitle = "All Countries", y = "Deaths per million", x = "Health Expenses")
 
-
 ```
 
 Note that the darker-blue dots tend to stay on the left side of the graph (less health expenses), while the 
@@ -98,31 +99,32 @@ lighter-blue dots tend to stay on the right side (more health expenses). The fol
 
 ```{r compare-older-share-and-expenses}
 
-ggplot(data_share_older, aes(y=health_exp_pc, x=share_older)) +
+# Plot between the expenditure and the share of elders
+
+ggplot(data, aes(y=health_exp_pc, x=share_older)) +
     theme_tufte() +
     stat_smooth(method='lm') +
     geom_point()+
     labs(title = "The relationship between population share of older people and healthcare expenses",
          subtitle = "All Countries", y = "Healthcare expenses (dollars)", x = "Share of older population (%)")
 
- # Get the correlation coefficient
-cor(data_share_older$share_older, data_share_older$health_exp_pc, use='complete.obs')
-
  # Linear Regression
-share_and_expense = lm(health_exp_pc~share_older, data_share_older)
+share_and_expense = lm(health_exp_pc~share_older, data)
 summary(share_and_expense)
 ```
 It gives a clear relationship between the population share and the expenditure, following the intuition that older people tend to spend more for healthcare. So, it's possible that it's not the healthcare expenses alone that might affect the mortalities but the share of older population affecting both of the healthcare expenses and the mortalities. 
 
 We picked two groups of countries, the first having very low share of older population and another having fairly high.
-```{r get-median-older-pop}
-summary(data_share_older$share_older)
-```
+
 ```{r plot-lower-older-pop}
-data_control_shareolder_1 <- data_share_older %>% 
+
+# Filter so that the dataset includes those with the lower share
+
+data_control_shareolder_1 <- data %>% 
                             select(deaths_cum_per_million, share_older, health_exp_pc) %>%
                             filter(share_older < 3)
-  
+
+# Plot and get regression  
 ggplot(data_control_shareolder_1, aes(y=deaths_cum_per_million, x=health_exp_pc, color = share_older)) +
     theme_tufte() +
     stat_smooth(method='lm') +
@@ -139,10 +141,13 @@ Due to the cluster at the lowest healthcare expenditure, The corrlation becomes 
 Despite the more clear pattern for the countries with the lower-share, the pattern becomes very unsignificant the countries with the higher-share.
 
 ```{r plot-higher-older-pop}
-data_control_shareolder_2 <- data_share_older %>% 
+
+# Filter so that the dataset will include those with the higher share only
+data_control_shareolder_2 <- data %>% 
                             select(deaths_cum_per_million, share_older, health_exp_pc) %>%
                             filter(share_older > 10)
-  
+
+# Plot and regression  
 ggplot(data_control_shareolder_2, aes(y=deaths_cum_per_million, x=health_exp_pc, color = share_older)) +
     theme_tufte() +
     stat_smooth(method='lm') +
@@ -160,9 +165,9 @@ Thus, in spite of the control, Healthcare expenditure and deaths per million hav
 Number of hospital beds simply means the capacities of hospitals to admit patients. We looked into the correlation between the number of hospital beds (per capita) and the mortalities.
 
 ```{r plot-hosptal-beds}
-data_hosp_beds_pc <- data %>% filter(!is.na(hosp_beds_pc))
 
-ggplot(data_hosp_beds_pc, mapping = aes(x = hosp_beds_pc, y = deaths_cum_per_million)) +
+# Plot between hospital beds per capita and mortality
+ggplot(data, mapping = aes(x = hosp_beds_pc, y = deaths_cum_per_million)) +
   geom_point() +
   theme_tufte() +
   labs(title = "COVID-19 mortality rate and number of hospital beds available", 
@@ -170,18 +175,18 @@ ggplot(data_hosp_beds_pc, mapping = aes(x = hosp_beds_pc, y = deaths_cum_per_mil
        x = "Number of hospital beds", y = "Deaths per Million") +
   stat_smooth(method='lm')
 
- # Get correlation coefficient
-cor(data_hosp_beds_pc$hosp_beds_pc, data_hosp_beds_pc$deaths_cum_per_million, use = "complete.obs")
 
  # Get confidence interval
-hosp_beds_and_mortality = lm(deaths_cum_per_million~hosp_beds_pc, data_hosp_beds_pc)
+hosp_beds_and_mortality = lm(deaths_cum_per_million~hosp_beds_pc, data)
 summary(hosp_beds_and_mortality)
 ```
 It merely shows a weak correlation with r-squared number around 0.04.
 
 However, when we introduce regions, the 
 ```{r plot-hospital-bed-with-regions}
-ggplot(data_hosp_beds_pc, mapping = aes(x = hosp_beds_pc, y = deaths_cum_per_million, color = continent)) +
+
+# Same plot but a dimension added: continents
+ggplot(data, mapping = aes(x = hosp_beds_pc, y = deaths_cum_per_million, color = continent)) +
   geom_point() +
   theme_tufte() +
   labs(title = "COVID-19 mortality rate and number of hospital beds available", 
@@ -194,9 +199,10 @@ Each region shows different patterns, with some having as expected.
 We dived groups by continents, and performed linear regression on each group.
 
 ```{r divide-groups-by-region}
-data_control_region <- data_hosp_beds_pc %>%
+data_control_region <- data %>%
                         select(hosp_beds_pc, continent, deaths_cum_per_million)
 
+# Divide groups by regions
 data_control_region_america <- data_control_region %>% filter(continent == 'America')
 
 data_control_region_asia <- data_control_region %>% filter(continent == 'Asia')
@@ -213,7 +219,7 @@ ggplot(data_control_region_america, mapping = aes(x = hosp_beds_pc, y = deaths_c
   geom_point() +
   theme_tufte() +
   labs(title = "COVID-19 mortality rate and number of hospital beds available", 
-       subtitle = "All countries", 
+       subtitle = "Americas", 
        x = "Number of hospital beds", y = "Deaths per Million") +
   stat_smooth(method='lm')
 
@@ -227,7 +233,7 @@ ggplot(data_control_region_europe, mapping = aes(x = hosp_beds_pc, y = deaths_cu
   geom_point() +
   theme_tufte() +
   labs(title = "COVID-19 mortality rate and number of hospital beds available", 
-       subtitle = "All countries", 
+       subtitle = "Europe", 
        x = "Number of hospital beds", y = "Deaths per Million") +
   stat_smooth(method='lm')
 
@@ -240,7 +246,7 @@ ggplot(data_control_region_asia, mapping = aes(x = hosp_beds_pc, y = deaths_cum_
   geom_point() +
   theme_tufte() +
   labs(title = "COVID-19 mortality rate and number of hospital beds available", 
-       subtitle = "All countries", 
+       subtitle = "Asia", 
        x = "Number of hospital beds", y = "Deaths per Million") +
   stat_smooth(method='lm')
 
@@ -253,7 +259,7 @@ ggplot(data_control_region_oceania, mapping = aes(x = hosp_beds_pc, y = deaths_c
   geom_point() +
   theme_tufte() +
   labs(title = "COVID-19 mortality rate and number of hospital beds available", 
-       subtitle = "All countries", 
+       subtitle = "Oceania", 
        x = "Number of hospital beds", y = "Deaths per Million") +
   stat_smooth(method='lm')
 
@@ -267,7 +273,7 @@ ggplot(data_control_region_africa, mapping = aes(x = hosp_beds_pc, y = deaths_cu
   geom_point() +
   theme_tufte() +
   labs(title = "COVID-19 mortality rate and number of hospital beds available", 
-       subtitle = "All countries", 
+       subtitle = "Africa", 
        x = "Number of hospital beds", y = "Deaths per Million") +
   stat_smooth(method='lm')
 
@@ -277,21 +283,57 @@ summary(lm_hosp_bed_af)
 ```
 
 ```{r plot-ghsi}
-data_ghsi <- data %>% filter(!is.na(ghsi))
 
-ggplot(data_health_index, mapping = aes(x = ghsi, y = deaths_cum_per_million)) +
+# Plot between GHS Index and mortality
+ggplot(data, mapping = aes(x = ghsi, y = deaths_cum_per_million)) +
   geom_point() +
   labs(title = "COVID-19 mortality rate and health index", subtitle = "All countries", 
        x = "Health index", y = "Deaths per million") +
   stat_smooth(method='lm') +
   theme_tufte()
-
+```
+```{r ghsi-regression}
 # Get the correlation coefficient
 # cor(data_health_index$health_index, data_health_index$deaths_cum_per_million, use = "complete.obs")
 
  # Get confidence interval
-ghsi_and_mortality = lm(deaths_cum_per_million~ghsi, data_ghsi)
+ghsi_and_mortality = lm(deaths_cum_per_million~ghsi, data)
 summary(ghsi_and_mortality) 
-```
 
+t.test(data$ghsi, data$deaths_cum_per_million)
+```
+It shows a positive correlation, with a weak r-squared of 0.157 but plausible p-value.
+
+We then look at the relationship between detection and GHS Index and that of detection and the mortalities. We brought the detect_index and compared to GHS index:
+
+```{r plot-detection-ghsi}
+
+# Plot between the detect_index and GHS Index
+ggplot(data, mapping = aes(x = detect_index, y = ghsi)) +
+  geom_point() +
+  labs(title = "COVID-19 mortality rate and health index", subtitle = "All countries", 
+       x = "Detect Index", y = "Deaths per million") +
+  stat_smooth(method='lm') +
+  theme_tufte()
+
+lm_detect_and_ghsi = lm(ghsi~detect_index, data)
+summary(lm_detect_and_ghsi) 
+```
+Since detect index is one of the measurement from the GHS Index, The correlation is strong and reliable with r-squared = 0.775 and extremely low p-value.
+
+
+```{r plot-detection}
+
+# Plot detection and mortality; add GHS Index as another dimension
+ggplot(data, mapping = aes(x = detect_index, y = deaths_cum_per_million, color = ghsi)) +
+  geom_point() +
+  labs(title = "COVID-19 mortality rate and health index", subtitle = "All countries", 
+       x = "Detect Index", y = "Deaths per million") +
+  stat_smooth(method='lm') +
+  theme_tufte()
+
+detect_and_mortality = lm(deaths_cum_per_million~detect_index, data)
+summary(detect_and_mortality) 
+```
+Here, the detection index and the mortality rate are weakly correlative.
 
