@@ -53,7 +53,7 @@ ggplot(data, aes(y=deaths_cum_per_million, x=health_exp_pc)) +
     stat_smooth(method='lm') +
     geom_point() +
     labs(title = "Health Expenses vs. COVID-19-associated deaths per million",
-         subtitle = "All Countries", y = "Deaths per million", x = "Health Expenses per capita")
+         subtitle = "All Countries", y = "Deaths per million", x = "Health Expenses per capita (USD)") 
 
  # Get correlation
 cor(data$health_exp_pc, data$deaths_cum_per_million, use = "complete.obs")
