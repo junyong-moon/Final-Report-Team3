@@ -45,7 +45,7 @@ data_wo_outliers <- data %>%
 
 ```
 
-Health Expenses:
+Health Expenses: 
 
 ```{r plot-health-expenses}
 ggplot(data, aes(y=deaths_cum_per_million, x=health_exp_pc)) +
@@ -148,7 +148,7 @@ cor(data_health_index$health_index, data_health_index$deaths_cum_per_million, us
 
  # Get confidence interval
 health_index_and_mortality = lm(deaths_cum_per_million~health_index, data_health_index)
-summary(health_index_and_mortality)
+summary(health_index_and_mortality) 
 ```
 
 
