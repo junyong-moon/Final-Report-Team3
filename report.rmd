@@ -22,11 +22,12 @@ library(ggthemes)
 ```{r load-csv-file}
 data <- read.csv("https://wzb-ipi.github.io/corona/df_full.csv") %>%
           filter(elapsed == 334)
+
 ```
 
 ```{r process-data}
 data <- data %>%
-  select(country, continent, population_2019, pop_density, deaths_cum, deaths_cum_per_million, health_exp_pc, hosp_beds_pc, health_index, share_older)  
+  select(country, continent, population_2019, pop_density, deaths_cum, deaths_cum_per_million, health_exp_pc, hosp_beds_pc, share_older)  
 ```
 
 ```{r convert-country-code}
@@ -36,7 +37,12 @@ survey <- read.csv('survey_healthcare.csv') %>%
 ```
 
 ```{r merge-data}
+ghsi <- read.csv('ghsi.csv')
+data <- left_join(data, ghsi)
+
 survey_merge <- right_join(data, survey)
+
+data
 ```
 
 ```{r fliter-outliers}
@@ -270,10 +276,10 @@ lm_hosp_bed_af = lm(deaths_cum_per_million~hosp_beds_pc, data_control_region_afr
 summary(lm_hosp_bed_af)
 ```
 
-```{r plot-health-index}
-data_health_index <- data %>% filter(!is.na(health_index))
+```{r plot-ghsi}
+data_ghsi <- data %>% filter(!is.na(ghsi))
 
-ggplot(data_health_index, mapping = aes(x = health_index, y = deaths_cum_per_million)) +
+ggplot(data_health_index, mapping = aes(x = ghsi, y = deaths_cum_per_million)) +
   geom_point() +
   labs(title = "COVID-19 mortality rate and health index", subtitle = "All countries", 
        x = "Health index", y = "Deaths per million") +
@@ -281,11 +287,11 @@ ggplot(data_health_index, mapping = aes(x = health_index, y = deaths_cum_per_mil
   theme_tufte()
 
 # Get the correlation coefficient
-cor(data_health_index$health_index, data_health_index$deaths_cum_per_million, use = "complete.obs")
+# cor(data_health_index$health_index, data_health_index$deaths_cum_per_million, use = "complete.obs")
 
  # Get confidence interval
-health_index_and_mortality = lm(deaths_cum_per_million~health_index, data_health_index)
-summary(health_index_and_mortality) 
+ghsi_and_mortality = lm(deaths_cum_per_million~ghsi, data_ghsi)
+summary(ghsi_and_mortality) 
 ```
 
 
