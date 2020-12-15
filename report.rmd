@@ -226,9 +226,9 @@ Thus, in spite of the control, Healthcare expenditure and deaths per million hav
 
 So, more expenditure on healthcare ironically leads to the more reported death in the countries that have lower share of older people.
 
-### Hospital Beds
+### Hospital Capacity 
 
-Number of hospital beds simply means the capacities of hospitals to admit patients. We looked into the correlation between the number of hospital beds (per capita) and the mortalities.
+Number of hospital beds simply means the capacities of hospitals to admit patients. We looked into the correlation between the number of hospital beds (per capita) and the mortalities. 
 
 ```{r plot-hosptal-beds}
 
