@@ -4,21 +4,28 @@ author: "Jun, Irene, Binh, Weidun"
 date: "12/15/2020"
 output: html_document
 ---
+
+Word Count: 3080
+
+## Abstract
+
+Can we say that countries with better health preparedness better perform against the spread of COVID-19? Generally people might think this way. However, United States, with the highest Global Health Security (GHS) Index[^GHSI], have reported the staggering number of cases over 15 million and over 300 thousand deaths from COVID-19, as of December 12, 2020. Moreover, the wealthy countries does not seem to perform well, either. Not being against to those claims, in this report, we attempt to explain the counter-intuitive pattern.
+
 ## Introduction
 
 Since the first reported case in December 2019 and the declaration of pandemic in March 2020 by WHO, COVID-19 has affected more than 170 countries and infected at least 70 million people with more than 1.6 million mortalities as of December 12, 2020. Moreover, COVID-19 has brought unprecedented challenges to a variety of economic activities, affecting more than half of the world population as a result of lockdown policy (Singh and Bandewar et al., 2020).[^Singh]
   	
 Furthermore, governments of various countries encountered challenges identifying infections due to the presence of asymptomatic cases. Also, the novel coronavirus has displayed a unique pattern that has never been present in previous epidemics such as SARS and MERS. 
 	
-Governments have seen the burst of spread of COVID-19, and they are aware that it leads to a serious problem for the healthcare system. Phougeishangbam and Mayanglambam describe the effect of the pandemic situation on healthcare workers: (details) (2020).[^Phougei] Also, the explosive increase in cases easily overwhelms the capacity of each hospital for admission. This, unfortunately, leads to lethal cases that are preventive if they have received the care on the proper time. 
+Governments have seen the burst of spread of COVID-19, and they are aware of the fact that it overloads the healthcare system for better recovery for patients. Phougeishangbam and Mayanglambam describe the effect of such burden on healthcare workers: exhaustion and sleepless pattern, insufficient protection from the virus, exposure to violence, etc. (2020).[^Phougei] Also, the explosive increase in cases easily overwhelms the capacity of each hospital for admission. This, unfortunately, leads to lethal cases that are preventive if they have received the care on the proper time. 
 	
-This research paper examines whether or not healthcare welfare/preparedness could affect the number of death cases. Generally, there is an intuition that a better healthcare system would lead to less mortality rates. However, some of the sources have claimed that healthcare quality does not necessarily correlate with coronavirus-associated deaths (Bosancianu and Dionne et al, 2020).[^Bosancianu] Furthermore, Global Health Security Index (GHSI) could not anticipate the preparedness regarding the novel coronavirus (Abbey and Khalifa, 2020).[^Abbey] With these claims in mind, this paper attempts to answer the following research questions: Does the quality of healthcare system affect the mortality rate from COVID-19? In which way, and why?
+This research paper examines whether or not healthcare welfare/preparedness could affect the number of death cases. Generally, there is an intuition that a better healthcare system would lead to less mortality rates. However, some of the sources have claimed that healthcare quality does not necessarily correlate with coronavirus-associated deaths (Bosancianu and Dionne et al, 2020).[^Bosancianu] Furthermore, Global Health Security Index (GHSI) could not anticipate the preparedness regarding the novel coronavirus (Abbey and Khalifa, 2020).[^Abbey] With these claims in mind, this paper attempts to answer the following research questions: Does the quality of healthcare system reduce the mortality rate from COVID-19? In which way, and why?
 
-## Keywords/definitions
+## Keywords and Their Definitions
 
 COVID-19: The pandemic of coronavirus declared by the World Health Organization in March 2020.
 
-Mortalities: Deaths per million.    
+Mortalities: The reported deaths per million.
 
 Healthcare preparedness: The quality of healthcare systems that are measured by various factors such as the GHSI, healthcare expenditures, and the availability of hospital beds. 
 
@@ -36,21 +43,26 @@ Blass and Penny note that COVID-19 is different then other natural disasters we 
 
 Consider the case in Vietnam, whose control of the pandemic has been widely praised. Even though Vietnam lies on the lower end of both healthcare expenditure and hospital beds per capita, they have less than 50 deaths after two major waves of COVID-19. As of now, life in Vietnam is mostly back to normal, with the exception of a halt in tourism across the country.
 
-97 percent of Vietnamese approve of their government’s directives during the pandemic, showing that most policies enacted by the government are met with positive reception.[^Walden] There are also other things that are hard to quantify and put into raw numbers.
+97 percent of Vietnamese approve of their government’s directives during the pandemic, showing that most policies enacted by the government are met with positive reception.[^Walden] There are also other factors that are hard to quantify and put into raw numbers.
 
 Furthermore, before and during the first wave, all education institutions were shut down to reduce the spread of the virus.[^Tran] Primarily grocery stores and supermarkets were allowed to open, while all other non-essential business (entertainment, dine-in, etc.) were shut down. So-called bed-field hospitals, very rudimentary but serviceable, were rapidly established in hotspots like Da Nang.[^Huynh] 
 
 ## Methodology
 
-We chose three variables, the GHSI, healthcare expenditure, and the number of hospital beds, to briefly define the healthcare quality. We will look at the relationship between them and the dependent variable, COVID-19 associated death per million. The data have been collected from this link: https://wzb-ipi.github.io/corona/.
+We chose three variables, the GHSI, healthcare expenditure, and the number of hospital beds, to briefly define the healthcare quality. We will look at the relationship between them and the dependent variable, COVID-19 associated deaths per million. Note that they are the official report from each country, and they do not reflect the actual, live-time counts. The data have been collected from this link: https://wzb-ipi.github.io/corona/.
 
-Control variables like population share of elders, regions, and survey results (i.e. the general attitude toward the healthcare service they receive) will be considered as well, to explain the unexpected results. The survey results have been collected from https://covidsurvey.mit.edu/api.html. [^survey]
+Control variables like population share of elders, regions will be considered as well, to discuss about the unexpected results.
 
 We plotted the independent variables on the x-axis and the dependent variable on the y-axis, and we used linear regression to show the correlation. We added the confounding variables as colors in order to display how they might contribute to the expected (or unexpected) result. 
 
-In our model, the healthcare preparedness (to the pandemic) is based on the GHSI, healthcare expenditures, the number of beds, and the detection and reliability. The preparedness may affect the report cases and deaths, and the transparency on reporting. The figure below shows the flow.
+In our model, the healthcare preparedness (to the pandemic) is based on the GHSI, healthcare expenditures, the number of beds, and the detection and reliability. The figure below shows the flow.
 
 ![Our model to explore the correlation between Health Preparedness and COVID-19 Mortality](model.jpeg)
+
+### Hypothesis
+
+We expect that better healthcare preparedness reduces mortality, due to the adequate control of the spread by policies and detection and better healthcare services.
+
 
 ## Results
 
@@ -66,6 +78,7 @@ library(dplyr)
 library(readr)
 library(countrycode)
 library(ggthemes)
+library(wordcountaddin) # This library to count words of this report
 ```
 
 ```{r load-csv-file}
@@ -81,14 +94,6 @@ data <- data %>%
   select(country, continent, population_2019, pop_density, deaths_cum, deaths_cum_per_million, health_exp_pc, hosp_beds_pc, share_older, detect_index)  
 ```
 
-```{r convert-country-code}
-# Bring the survey dataset
-# Citation: Global survey on coronavirus beliefs, behaviors, and norms: Technical Report from MIT
-
-survey <- read.csv('survey_healthcare.csv') %>%
-            select(!(gender:age)) %>%
-            mutate(country = countrycode(country, 'iso2c', 'country.name'))
-```
 
 ```{r merge-data}
 # Bring the GHS Index
@@ -97,7 +102,6 @@ survey <- read.csv('survey_healthcare.csv') %>%
 ghsi <- read.csv('ghsi.csv')
 data <- left_join(data, ghsi)
 
-survey_merge <- right_join(data, survey)
 ```
 
 ### Health Expenditure
@@ -114,7 +118,6 @@ ggplot(data, aes(y=deaths_cum_per_million, x=health_exp_pc)) +
          subtitle = "All Countries", y = "Deaths per million", x = "Health Expenses per capita (USD)") 
 
 ```
-This rather looking very unexpected, indincating more deaths for more health expenses per capita. Here are the details for the dataset.
 
 ```{r health-expenses}
  # Get correlation
@@ -127,6 +130,8 @@ summary(lm_health_exp)
 
 t.test(data$health_exp_pc, data$deaths_cum_per_million)
 ```
+
+This rather looks very unexpected, indincating more deaths for more health expenses per capita. The graph above displays a slightly positive correlation between health expenses per capita and deaths per million with the correlation coefficient of 0.405. Linear regression is applied to showcase such a relationship, and as the correlation coefficient suggests, a positive linear line of best fit is projected. The slope is about 0.09, which means for every 1,000 more dollars spent on healthcare per capita, 90 more COVID-19 deaths per million.
 
 To address this unexpected pattern, we looked at one of the confounding variable: share of older population.
 
@@ -160,10 +165,19 @@ ggplot(data, aes(y=health_exp_pc, x=share_older)) +
  # Linear Regression
 share_and_expense = lm(health_exp_pc~share_older, data)
 summary(share_and_expense)
-```
-It gives a clear relationship between the population share and the expenditure, following the intuition that older people tend to spend more for healthcare. So, it's possible that it's not the healthcare expenses alone that might affect the mortalities but the share of older population affecting both of the healthcare expenses and the mortalities. 
 
-We picked two groups of countries, the first having very low share of older population and another having fairly high.
+# Confidence Interval
+t.test(data$share_older, data$health_exp_pc)
+```
+
+
+The graph above showcases that countries with a greater share of the elderly population in a country is associated with higher healthcare expenditures, which suggests that there is a correlation between the population demographics and healthcare expenses. So, it's possible that it's not the healthcare expenses alone that might affect the mortalities but the share of older population affecting both of the healthcare expenses and the mortalities.
+
+The correlation is plausible with the extremely low p-value. Generally, one more percent of older population leads to 139 dollars increase for healthcare per capita.
+
+To address the point raised by the previous graph, the correlation between share of the elderly population and healthcare expenditure is analyzed below in the discussion section.
+
+We picked two groups of countries, the first having very low share of older population and another having fairly high, to limit the variation in the share of population.
 
 ```{r plot-lower-older-pop}
 
@@ -179,13 +193,13 @@ ggplot(data_control_shareolder_1, aes(y=deaths_cum_per_million, x=health_exp_pc,
     stat_smooth(method='lm') +
     geom_point() +
     labs(title = "The relationship between healthcare expenses and mortality rate",
-         subtitle = "For those countries having low share_older (less than 3 percent)",
+         subtitle = "For those countries having low share_older (less than 3 percents)",
          y = "Deaths per million", x = "Healthcare expenditure (dollars)")
 
 lm_control_shareolder_1 <- lm(deaths_cum_per_million ~ health_exp_pc, data = data_control_shareolder_1)
 summary(lm_control_shareolder_1)
 ```
-Due to the cluster at the lowest healthcare expenditure, The corrlation becomes highly significant, although the pattern did not result yet again not as expected.
+Due to the cluster at the lowest healthcare expenditure, The corrlation becomes more significant, although the pattern did not result yet again not as expected. (r-squared value = 0.560 and p-value < 0.001)
 
 Despite the more clear pattern for the countries with the lower-share, the pattern becomes very unsignificant the countries with the higher-share.
 
@@ -202,13 +216,15 @@ ggplot(data_control_shareolder_2, aes(y=deaths_cum_per_million, x=health_exp_pc,
     stat_smooth(method='lm') +
     geom_point() +
     labs(title = "The relationship between healthcare expenses and mortality rate",
-         subtitle = "For those countries having low share_older (less than 3 percent)",
+         subtitle = "For those countries having low share_older (higher than 10 percents)",
          y = "Deaths per million", x = "Healthcare expenditure (dollars)")
 
-lm_control_shareolder_2 <- lm(deaths_cum_per_million ~ health_exp_pc, data = data_control_shareolder_2)
+lm_control_shareolder_2 <- lm(deaths_cum_per_million ~ health_exp_pc, data_control_shareolder_2)
 summary(lm_control_shareolder_2)
 ```
-Thus, in spite of the control, Healthcare expenditure and deaths per million have positive correlation.
+Thus, in spite of the control, Healthcare expenditure and deaths per million have positive correlation for the lower share and no clear correlation (not significant) for the higher share with p-value = 0.2.
+
+So, more expenditure on healthcare ironically leads to the more reported death in the countries that have lower share of older people.
 
 ### Hospital Beds
 
@@ -226,13 +242,14 @@ ggplot(data, mapping = aes(x = hosp_beds_pc, y = deaths_cum_per_million)) +
   stat_smooth(method='lm')
 
 
- # Get confidence interval
+ # Linear Regression
 hosp_beds_and_mortality = lm(deaths_cum_per_million~hosp_beds_pc, data)
 summary(hosp_beds_and_mortality)
 ```
-It merely shows a weak correlation with r-squared number around 0.04.
+It shows a weak positive correlation with slope of 0.25 and r-squared number around 0.04.
 
-However, when we introduce regions, the 
+However, when we introduce regions, the patterns appear: 
+
 ```{r plot-hospital-bed-with-regions}
 
 # Same plot but a dimension added: continents
@@ -240,11 +257,11 @@ ggplot(data, mapping = aes(x = hosp_beds_pc, y = deaths_cum_per_million, color =
   geom_point() +
   theme_tufte() +
   labs(title = "COVID-19 mortality rate and number of hospital beds available", 
-       subtitle = "All countries", 
+       subtitle = "All countries, divided by continents", 
        x = "Number of hospital beds", y = "Deaths per Million") +
   stat_smooth(method='lm')
 ```
-Each region shows different patterns, with some having as expected.
+Each region shows different patterns.
 
 We dived groups by continents, and performed linear regression on each group.
 
@@ -305,6 +322,8 @@ lm_hosp_bed_as = lm(deaths_cum_per_million~hosp_beds_pc, data_control_region_asi
 summary(lm_hosp_bed_as)
 ```
 ```{r plot-oceania}
+data_control_region_oceania <- data_control_region_oceania %>% filter(!is.na(hosp_beds_pc))
+
 ggplot(data_control_region_oceania, mapping = aes(x = hosp_beds_pc, y = deaths_cum_per_million)) +
   geom_point() +
   theme_tufte() +
@@ -332,12 +351,11 @@ lm_hosp_bed_af = lm(deaths_cum_per_million~hosp_beds_pc, data_control_region_afr
 summary(lm_hosp_bed_af)
 ```
 
+None of the regions, except Africa, show the significance between the number of hospital beds and mortality, and African countries show positive correlation. Like the healthcare expenditure, more hospital beds happens to lead to more death counts on reports.
+
 ### Global Health Security Index
 
 According to the GHS index website, Global Health Security (GHS) Index, created by Nuclear Threat Initiative, Johns Hopkins Center for Health Security, and The Economist Intelligence Unit, considers six measurements to determine each country’s healthcare preparedness: prevention, detection and reporting, rapid response, health system, compliance with international norms, and risk environment. [^GHSI] The initiative is to develop global healthcare readiness to prevent or effectively respond to disease epidemics. [^GHSI] We use the GHS index that was released in 2019.
-
-Unlike the expectation (or as the expectation with the consistency of the results), countries with higher GHS Index tend to have more deaths. Since detection is one of the measurements for the GHS Index, we looked at the detection index. The correlation between GHS Index and detection index was clear and reliable (definitely as expected).
-
 
 ```{r plot-ghsi}
 
@@ -353,15 +371,16 @@ ggplot(data, mapping = aes(x = ghsi, y = deaths_cum_per_million)) +
 # Get the correlation coefficient
 # cor(data_health_index$health_index, data_health_index$deaths_cum_per_million, use = "complete.obs")
 
- # Get confidence interval
+ # Linear Regression and Confidence Interval
 ghsi_and_mortality = lm(deaths_cum_per_million~ghsi, data)
 summary(ghsi_and_mortality) 
 
 t.test(data$ghsi, data$deaths_cum_per_million)
 ```
-It shows a positive correlation, with a weak r-squared of 0.157 but plausible p-value.
 
-We then look at the relationship between detection and GHS Index and that of detection and the mortalities. We brought the detect_index and compared to GHS index:
+Unlike the hypothesis (yet again), it shows a positive correlation, with a weak r-squared of 0.157 but plausible p-value.
+
+Since detection is one of the measurements for the GHS Index, we looked at the detection index as an independent variable. The correlation between GHS Index and detection index was clear and reliable (definitely as expected). We brought the detect_index and compared to GHS index:
 
 ```{r plot-detection-ghsi}
 
@@ -378,13 +397,14 @@ summary(lm_detect_and_ghsi)
 ```
 Since detect index is one of the measurement from the GHS Index, The correlation is strong and reliable with r-squared = 0.775 and extremely low p-value.
 
+We then look at the relationship between detection index and the COVID-19 mortality. 
 
 ```{r plot-detection}
 
 # Plot detection and mortality; add GHS Index as another dimension
 ggplot(data, mapping = aes(x = detect_index, y = deaths_cum_per_million, color = ghsi)) +
   geom_point() +
-  labs(title = "COVID-19 mortality rate and health index", subtitle = "All countries", 
+  labs(title = "COVID-19 mortality rate and detect index", subtitle = "All countries", 
        x = "Detect Index", y = "Deaths per million") +
   stat_smooth(method='lm') +
   theme_tufte()
@@ -392,6 +412,9 @@ ggplot(data, mapping = aes(x = detect_index, y = deaths_cum_per_million, color =
 detect_and_mortality = lm(deaths_cum_per_million~detect_index, data)
 summary(detect_and_mortality) 
 ```
+The correlation is weak (R-squared = 0.12) but it is plausible (p < 0.001). More detection generally leads to more cases, so this pattern can be interpreted intuitively.
+
+
 ## Discussion
 
 ### Health Expenditure
@@ -411,15 +434,25 @@ According to our hypothesis, a higher GHS Index would correlate with a low numbe
  
 In this manner, confounding variables that are not directly studied in our analysis could affect the correlations. More confounding variables could be present. For instance, Abbey and Khalifa (2020) compared the GHS index with their own indicators and discovered that there exists a discrepancy that may be due to limited emphasis on testing. [^Abbey] They also suggested factors like countries’ response to prior health threats and decisive leadership can play an important part in management of health crises and should also be included in future GHS index reports. [^Abbey]
 
-## Conclusion
-As we tried to find the pattern from the complex data with unexpected results, we became more certain that healthcare preparedness does not determine the death rate. Instead, it gives an idea to the relationship to the reported death. Better healthcare preparedness leads to better identification of patients; better identification of patients leads to more confirmed cases; and more cases may lead to more reported deaths. 
-	
 
+### Limitation
+
+Lastly, we have to recognize the limitations that come with this research. Many of the data used for our data analysis are based on government reporting. While most governments make an effort to provide the most accurate data possible and are fairly trustworthy, there is still a possibility that different methods of identifying and estimating potential cases can lead to discrepancies between reported cases and actual cases. We should also take note of the fact that humans are often prone to fallacy and therefore the instances of misidentification and underreporting in the process of identifying cases can more or less have an impact on the overall accuracy of this research.
+
+Furthermore, the reported mortalities may not have necessarily been caused by COVID-19. There may be multiple causes for each mortality case, which would undermine the accuracy of the data we have used. This limitation, however, is inherent in the data of the reported mortality itself and cannot be resolved through our research. Additionally, as previously stated in the discussion, we acknowledge that the measurements introduced in our research report are limited to finite factors. There are still various non-finite factors that we have failed to include in our reports. This is due to the fact that the majority of them are unable to be quantified and studied. We have pointed out several factors that should be considered and included in measuring countries’ pandemic preparedness as some of these measurements may or may not have played a determining role in countries’ handling of this pandemic.  
+
+
+## Conclusion
+As we tried to find the pattern from the complex data with unexpected results, we became more certain that healthcare preparedness does not affect the death rate. Instead, it gives an idea to the relationship to the reported death. Better healthcare preparedness leads to better identification of patients; better identification of patients leads to more confirmed cases; and more cases may lead to more reported deaths.
+
+So, the measurements in Health Preparedness does not give a clear representation of the expectation in the actual case and death counts. However, they give important insights on the swiftness and the transparency in reporting and providing proper care (or home quarantine) to patients. Despite the positive correlation between the Healthcare preparedness and mortalities, we could not say countries with better the healthcare system perform worse.
+
+Although we did not get to the clear answer to our hypothesis, we reached to an interesting, important conclusion: Healthcare preparedness represents the clear, accurate report in detection and collection, not the superficial counts.
+
+	
 ## References
 
 [^GHSI]: 2019 Global Security Index. About. https://www.ghsindex.org/about/
-
-[^survey]: Global survey on coronavirus beliefs, behaviors, and norms: Technical Report. https://covidsurvey.mit.edu/api.html
 
 [^Abbey]: Abbey and Khalifa et al. “The Global Health Security Index is not predictive of coronavirus pandemic responses among Organization for Economic Cooperation and Development countries.” Published 7 Oct. 2020.
 
