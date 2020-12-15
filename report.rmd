@@ -4,6 +4,55 @@ author: "Jun, Irene, Binh, Weidun"
 date: "12/15/2020"
 output: html_document
 ---
+## Introduction
+
+Since the first reported case in December 2019 and the declaration of pandemic in March 2020 by WHO, COVID-19 has affected more than 170 countries and infected at least 70 million people with more than 1.6 million mortalities as of December 12, 2020. Moreover, COVID-19 has brought unprecedented challenges to a variety of economic activities, affecting more than half of the world population as a result of lockdown policy (Singh and Bandewar et al., 2020).[^Singh]
+  	
+Furthermore, governments of various countries encountered challenges identifying infections due to the presence of asymptomatic cases. Also, the novel coronavirus has displayed a unique pattern that has never been present in previous epidemics such as SARS and MERS. 
+	
+Governments have seen the burst of spread of COVID-19, and they are aware that it leads to a serious problem for the healthcare system. Phougeishangbam and Mayanglambam describe the effect of the pandemic situation on healthcare workers: (details) (2020).[^Phougei] Also, the explosive increase in cases easily overwhelms the capacity of each hospital for admission. This, unfortunately, leads to lethal cases that are preventive if they have received the care on the proper time. 
+	
+This research paper examines whether or not healthcare welfare/preparedness could affect the number of death cases. Generally, there is an intuition that a better healthcare system would lead to less mortality rates. However, some of the sources have claimed that healthcare quality does not necessarily correlate with coronavirus-associated deaths (Bosancianu and Dionne et al, 2020).[^Bosancianu] Furthermore, Global Health Security Index (GHSI) could not anticipate the preparedness regarding the novel coronavirus (Abbey and Khalifa, 2020).[^Abbey] With these claims in mind, this paper attempts to answer the following research questions: Does the quality of healthcare system affect the mortality rate from COVID-19? In which way, and why?
+
+## Keywords/definitions
+
+COVID-19: The pandemic of coronavirus declared by the World Health Organization in March 2020.
+
+Mortalities: Deaths per million.    
+
+Healthcare preparedness: The quality of healthcare systems that are measured by various factors such as the GHSI, healthcare expenditures, and the availability of hospital beds. 
+
+GHSI: Global Health Security Index. A “comprehensive assessment of global health security capabilities in 195 countries” available on https://www.ghsindex.org/. 
+
+Healthcare expenditure: The amount of national budget spent on healthcare systems. 
+
+Availability of hospital beds: Number of hospital beds per capita. 
+
+## Literature review
+
+Some of the research on COVID-19 has incorporated factors related to healthcare systems. For instance, the impact of social distancing on healthcare demand has been studied, which concludes that social distancing is deemed to be crucial in ensuring that “COVID-19 cases do not exceed local hospital capacity” (Wang et al, 2020).[^Wang] This particular research acknowledged the fact that hospital capacity is an important factor that could help to manage the impact of the pandemic, which provided further motivation for studying the potential correlation between healthcare quality and COVID-19 mortality rates.
+	
+Blass and Penny note that COVID-19 is different then other natural disasters we have faced (2020).[^Blass] They criticize that the health service providers were not prepared for the novel coronavirus, unlike previous epidemics. With the rise of online services, cybersecurity and protocols for distanced conferences and meetings have become vital. The column adds, staff members have difficulty working remotely, since they never had this experience before. Blass and Penny conclude that the global change and the characteristics of COVID-19 have changed the adequate guidelines to the possible future disasters, and the providers must prepare such procedures.
+
+Consider the case in Vietnam, whose control of the pandemic has been widely praised. Even though Vietnam lies on the lower end of both healthcare expenditure and hospital beds per capita, they have less than 50 deaths after two major waves of COVID-19. As of now, life in Vietnam is mostly back to normal, with the exception of a halt in tourism across the country.
+
+97 percent of Vietnamese approve of their government’s directives during the pandemic, showing that most policies enacted by the government are met with positive reception.[^Walden] There are also other things that are hard to quantify and put into raw numbers.
+
+Furthermore, before and during the first wave, all education institutions were shut down to reduce the spread of the virus.[^Tran] Primarily grocery stores and supermarkets were allowed to open, while all other non-essential business (entertainment, dine-in, etc.) were shut down. So-called bed-field hospitals, very rudimentary but serviceable, were rapidly established in hotspots like Da Nang.[^Huynh] 
+
+## Methodology
+
+We chose three variables, the GHSI, healthcare expenditure, and the number of hospital beds, to briefly define the healthcare quality. We will look at the relationship between them and the dependent variable, COVID-19 associated death per million. The data have been collected from this link: https://wzb-ipi.github.io/corona/.
+
+Control variables like population share of elders, regions, and survey results (i.e. the general attitude toward the healthcare service they receive) will be considered as well, to explain the unexpected results. The survey results have been collected from https://covidsurvey.mit.edu/api.html. [^survey]
+
+We plotted the independent variables on the x-axis and the dependent variable on the y-axis, and we used linear regression to show the correlation. We added the confounding variables as colors in order to display how they might contribute to the expected (or unexpected) result. 
+
+In our model, the healthcare preparedness (to the pandemic) is based on the GHSI, healthcare expenditures, the number of beds, and the detection and reliability. The preparedness may affect the report cases and deaths, and the transparency on reporting. The figure below shows the flow.
+
+![Our model to explore the correlation between Health Preparedness and COVID-19 Mortality](model.jpeg)
+
+## Results
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE) 
@@ -51,7 +100,7 @@ data <- left_join(data, ghsi)
 survey_merge <- right_join(data, survey)
 ```
 
-<h3>Health Expenditure</h3>
+### Health Expenditure
 
 ```{r plot-health-expenses}
 
@@ -161,6 +210,7 @@ summary(lm_control_shareolder_2)
 ```
 Thus, in spite of the control, Healthcare expenditure and deaths per million have positive correlation.
 
+### Hospital Beds
 
 Number of hospital beds simply means the capacities of hospitals to admit patients. We looked into the correlation between the number of hospital beds (per capita) and the mortalities.
 
@@ -282,6 +332,13 @@ lm_hosp_bed_af = lm(deaths_cum_per_million~hosp_beds_pc, data_control_region_afr
 summary(lm_hosp_bed_af)
 ```
 
+### Global Health Security Index
+
+According to the GHS index website, Global Health Security (GHS) Index, created by Nuclear Threat Initiative, Johns Hopkins Center for Health Security, and The Economist Intelligence Unit, considers six measurements to determine each country’s healthcare preparedness: prevention, detection and reporting, rapid response, health system, compliance with international norms, and risk environment. [^GHSI] The initiative is to develop global healthcare readiness to prevent or effectively respond to disease epidemics. [^GHSI] We use the GHS index that was released in 2019.
+
+Unlike the expectation (or as the expectation with the consistency of the results), countries with higher GHS Index tend to have more deaths. Since detection is one of the measurements for the GHS Index, we looked at the detection index. The correlation between GHS Index and detection index was clear and reliable (definitely as expected).
+
+
 ```{r plot-ghsi}
 
 # Plot between GHS Index and mortality
@@ -335,5 +392,58 @@ ggplot(data, mapping = aes(x = detect_index, y = deaths_cum_per_million, color =
 detect_and_mortality = lm(deaths_cum_per_million~detect_index, data)
 summary(detect_and_mortality) 
 ```
-Here, the detection index and the mortality rate are weakly correlative.
+## Discussion
+
+### Health Expenditure
+Health expenditure includes spendings on “collective services [such as] prevention and public health services” and “personal healthcare [including] curative care [...] and medical goods” (OECD, 2019). [^OECD] It is regarded as an “important determinant of the health status and economic development of a nation” (Sengupta, 2015).[^Sengupta] Based on such information, it can be inferred that higher health expenditure would mean more investment on healthcare systems, leading to better quality in healthcare. 
+ 
+Intuitively, one could predict that better healthcare quality would be associated with less mortality in the pandemic. However, the analysis has shown that the reality is quite the opposite. According to the analysis, mortalities were higher in countries with higher healthcare expenditures. This indicates that there may be a potential confounding variable, which we have identified as share of the elderly population and conducted further analysis.     
+ 
+The positive correlation between the share of the elderly population and healthcare expenditures suggest that countries with higher healthcare expenditure are those with greater shares of the elderly population. In fact, the existence of a relatively large elderly population could be the very reason for higher healthcare expenditures. At this point, it is important to recognize that COVID-19 is deemed to be more fatal to the elderly than the younger population. This would explain why there has been a positive correlation between health expenses per capita and deaths per million. Essentially, health expenses are higher when there is a greater share of the elderly population that is more susceptible to mortality—leading to a higher number of reported mortality cases.    
+
+### Hospital Capacity
+In the regions that display a negative correlation between hospital capacity and mortality, it can be inferred that there may be a certain degree of association between these two variables. Given that hospital capacity is an important factor for healthcare quality, the fact that a greater hospital capacity is associated with less mortality suggests that a better healthcare system could help to reduce mortality during a pandemic. Intuitively, a greater hospital capacity represents the fact that more people have a stable access to a hospital, suggesting that the COVID-19 patients would have been diagnosed and treated early—leading to less mortality among them. 
+
+In the case of Africa, however, such interpretation does not explain the trend of positive correlation. This indicates that there are some of the confounding variables that could potentially explain the trend. In the previous section, we have discussed how the share of the elderly population serves as a variable that explains the positive correlation between health expenditures and mortality. Similarly, there may be factors that explain high hospital capacity, and these factors may simultaneously be associated with high mortality during a pandemic.
+
+### Global Health Security Index
+According to our hypothesis, a higher GHS Index would correlate with a low number of mortality cases. The result, however, displayed the opposite trend, which we could explain by the correlation between the GHS Index and detection index. A higher detection index is associated with a higher GHS index; this suggests that the countries with higher GHS indices would have participated in detection more activel, leading to more reported diagnosis and mortality cases.   
+ 
+In this manner, confounding variables that are not directly studied in our analysis could affect the correlations. More confounding variables could be present. For instance, Abbey and Khalifa (2020) compared the GHS index with their own indicators and discovered that there exists a discrepancy that may be due to limited emphasis on testing. [^Abbey] They also suggested factors like countries’ response to prior health threats and decisive leadership can play an important part in management of health crises and should also be included in future GHS index reports. [^Abbey]
+
+## Conclusion
+As we tried to find the pattern from the complex data with unexpected results, we became more certain that healthcare preparedness does not determine the death rate. Instead, it gives an idea to the relationship to the reported death. Better healthcare preparedness leads to better identification of patients; better identification of patients leads to more confirmed cases; and more cases may lead to more reported deaths. 
+	
+
+## References
+
+[^GHSI]: 2019 Global Security Index. About. https://www.ghsindex.org/about/
+
+[^survey]: Global survey on coronavirus beliefs, behaviors, and norms: Technical Report. https://covidsurvey.mit.edu/api.html
+
+[^Abbey]: Abbey and Khalifa et al. “The Global Health Security Index is not predictive of coronavirus pandemic responses among Organization for Economic Cooperation and Development countries.” Published 7 Oct. 2020.
+
+[^Blass]: Blass and Penny. “Emergency Response Planning: If We Knew Then What We Know Now.” 
+Journal of Health Care Compliance, Sep.-Oct. 2020.
+
+[^Bosancianu]: Bosancianu and Dionne et al. “Political and Social Correlates of Covid-19 Mortality.”  Jun. 2020.
+
+[^Huynh]: Huynh and Tosun et al. “All‐of‐government response to the COVID‐19 pandemic: The case of Vietnam.” Public Administration and Development, Oct. 2020.
+
+[^OECD]: OECD. “Health Spending.” Health at a Glance, 2019.  
+
+[^Phougei]: Phougeishangbam and Mayanglambam. “Impact of COVID 19 on Health Care Personnel.” Indian Journal of Public Research & Development, Sep. 2020.
+
+[^Sengupta]: Sengupta, KEYA. “Health Expenditure and its Impact on Health Status.” International Institute 
+of Social and Economic Sciences, 2015. 
+
+[^Singh]: Singh and Bandewar et al. “The Impact of the COVID-19 Pandemic Response on Other Health Research.” Bull World Health Organization, 2020.
+
+[^Tran]: Tran and Le. “Rapid response to the COVID-19 pandemic: Vietnam government’s experience and preliminary success.” Journal of Global Health, 2020.
+
+[^Walden]: Walden, Max. (2020, Sep. 9). How did Vietnam bring the spread of coronavirus to a halt — again? ABC News. Retrieved from https://www.abc.net.au/news/2020-09-23/how-did-vietnam-get-on-top-of-coronavirus-yet-again/12683008
+
+[^Wang]: Wang, et al. “Impact of Social Distancing Measures on Coronavirus Disease Healthcare 
+Demand.” Centers for Disease Control and Prevention, 2020. 
+
 
